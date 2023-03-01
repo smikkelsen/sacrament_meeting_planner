@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sacrament Meeting Planner</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+</head>
+<body>
+<%= render 'common/navbar' %>
+<div id="body-wrapper" class="container">
+  <%= render 'common/alerts' %>
+  <div id="body-content" class="row">
+    <%= yield %>
+  </div>
+</div>
+</body>
+</html>

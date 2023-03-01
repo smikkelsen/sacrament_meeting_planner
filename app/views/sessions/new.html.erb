@@ -1,0 +1,9 @@
+<div class="row mt-5" id="login">
+  <div class="col-sm-2 mx-auto">
+    <h4>Please Sign In</h4>
+    <%= google_sign_in_button proceed_to: create_session_url do %>
+      <%= image_tag('google_signin.png', alt: 'Google', class: 'google_signin_icon') %>
+    <% end %>
+  </div>
+</div>
+

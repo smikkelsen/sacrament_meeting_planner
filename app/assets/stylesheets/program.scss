@@ -1,0 +1,75 @@
+#body-wrapper {
+  #body-content {
+    #program-container {
+      .program-row {
+
+        margin-bottom: 1em;
+        padding-top: 1em;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        .expand-wrapper {
+          height: 0;
+        }
+
+        .row {
+          padding: 5px;
+        }
+
+        .date {
+          font-size: 1.8em;
+          font-weight: bold;
+          padding-top: 5px;
+          padding-bottom: 5px;
+        }
+
+        .meeting-type {
+          font-size: 1.2em;
+          font-weight: bold;
+          padding-top: 5px;
+          padding-bottom: 5px;
+        }
+
+        .item-label {
+          font-weight: bold;
+        }
+
+        .card {
+          margin-bottom: 1em;
+          background-color: ghostwhite;
+
+          &.program {
+            background-color: #eef1fd;
+          }
+
+          &.music {
+            background-color: azure;
+          }
+
+          &.prayers {
+            background-color: #fffbee;
+          }
+
+          .card-body {
+            line-height: 1.4em;
+          }
+        }
+
+      }
+    }
+  }
+}
+
+.modal-content {
+  form {
+    .input-row {
+      margin-bottom: 1em;
+    }
+
+    .input-with-btn {
+      //width:100%;
+    }
+  }
+}

@@ -1,0 +1,5 @@
+<%= javascript_pack_tag 'program_pack', data: { currentUser: current_user } %>
+<%= content_tag :div,
+                id: "programComponentData",
+                current_user: current_user.to_json do %>
+<% end %>

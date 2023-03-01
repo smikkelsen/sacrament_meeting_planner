@@ -1,0 +1,22 @@
+@import 'bootstrap_overrides';
+@import 'bootstrap';
+@import 'login';
+@import 'program';
+
+
+body {
+  background-color: lightsteelblue;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+#body-wrapper {
+  margin-top: 1em;
+  line-height: 1em;
+}
+
+.badge.bg-warning {
+  color: #2E2F30;
+}
