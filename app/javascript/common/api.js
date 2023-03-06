@@ -1,6 +1,6 @@
 export const fetchPrograms = (search_type=null, search_value=null) => {
     const url = new URL("/api/v1/programs", document.baseURI);
-    if(search_type && search_value) {
+    if(search_type || search_value) {
         url.searchParams.set('search_type', search_type);
         url.searchParams.set('search_value', search_value);
     }

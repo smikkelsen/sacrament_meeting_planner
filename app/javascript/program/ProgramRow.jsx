@@ -25,6 +25,7 @@ class ProgramRow extends React.Component {
     constructor(props) {
         super(props);
         this.handleProgramFormUpdate = this.handleProgramFormUpdate.bind(this);
+        this.handleProgramFormDirty = this.handleProgramFormDirty.bind(this);
         this.handleExpand = this.handleExpand.bind(this);
         this.handleCollapse = this.handleCollapse.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
@@ -48,15 +49,13 @@ class ProgramRow extends React.Component {
         };
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if(!_.isEqual(prevState.program, this.state.program)) {
-            if (!prevState.dirty && !this.state.dirty) {
-                this.setState({dirty: true})
-            } else {
-                
-            }
-        }
-    }
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     if (!_.isEqual(prevState.program, this.state.program)) {
+    //         if (!prevState.dirty && !this.state.dirty) {
+    //             this.setState({dirty: true})
+    //         }
+    //     }
+    // }
 
     handleEdit(_e) {
         this.setState({showEditModal: true})
@@ -92,6 +91,11 @@ class ProgramRow extends React.Component {
     handleProgramFormUpdate(program) {
         this.setState({program: program})
     }
+
+    handleProgramFormDirty(dirty) {
+        this.setState({dirty: dirty})
+    }
+
 
     submitForm(e) {
         let newProgramItems = this.state.program.program_items.filter(item => {
@@ -162,6 +166,7 @@ class ProgramRow extends React.Component {
                         users={this.props.users}
                         hymns={this.props.hymns}
                         handleToUpdate={this.handleProgramFormUpdate.bind(this)}
+                        handleToDirty={this.handleProgramFormDirty.bind(this)}
                     />
                 </Modal.Body>
                 <Modal.Footer>
@@ -245,7 +250,7 @@ class ProgramRow extends React.Component {
                   className={`program-row ${this.state.expanded ? 'expanded' : 'collapsed no-focus clickable'}`}
                   onClick={(e) => this.handleExpand(e)}>
                 <Card.Body>
-                    <Row>
+                    <Row className={renderParentClickable}>
                         <Col md={3} className={renderParentClickable}>
                             <Row>
                                 <Col sm={12}>

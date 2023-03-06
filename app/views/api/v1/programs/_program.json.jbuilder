@@ -16,7 +16,7 @@
   json.presiding do
     json.id program.presiding&.id
     json.first_name program.presiding&.first_name
-    json.last_name p&.presiding&.last_name
+    json.last_name program.presiding&.last_name
     json.full_name program.presiding&.full_name
     json.role program.presiding&.role
     json.email program.presiding&.email
@@ -65,7 +65,7 @@
     json.name program.closing_hymn&.name
     json.page program.closing_hymn&.page
   end
-  json.program_items program.program_items.order(:created_at) do |pi|
+  json.program_items program.program_items do |pi|
     json.id pi.id
     json.item_type pi.item_type
     json.key pi.key

@@ -86,13 +86,13 @@ class ProgramForm extends React.Component {
         }
         this.setState(prevState => {
             return {program: {...prevState.program, [nestedKey]: obj}}
-        })
+        }, this.props.handleToDirty(true))
     }
 
     handleInputChange(e) {
         this.setState(prevState => {
             return {program: {...prevState.program, [e.target.id]: e.target.value}}
-        })
+        }, this.props.handleToDirty(true))
     }
 
     hasRole(role) {
@@ -104,7 +104,7 @@ class ProgramForm extends React.Component {
     handleProgramItemsUpdate(programItems) {
         this.setState(prevState => {
             return {program: {...prevState.program, program_items: programItems}}
-        })
+        }, this.props.handleToDirty(true))
     }
 
     renderInputValue(attributeId) {

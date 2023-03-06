@@ -9,7 +9,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
-import {fetchHymns, fetchPrograms, fetchUsers} from "../common/api";
+import {fetchPrograms} from "../common/api";
 
 class ProgramRows extends React.Component {
 
@@ -17,12 +17,13 @@ class ProgramRows extends React.Component {
         super(props);
         this.renderFilterModal = this.renderFilterModal.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-         this.handleClearFilter = this.handleClearFilter.bind(this);
+        this.handleClearFilter = this.handleClearFilter.bind(this);
 
         this.state = {
             programs: this.props.programs,
             showFilterModal: false,
-            searchType: '',
+            filtered: false,
+            searchType: 'all',
             searchValue: ''
         };
     }
@@ -36,17 +37,14 @@ class ProgramRows extends React.Component {
         element.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
 
-    handleInputChange(e) {
-        this.setState({[e.target.id]: e.target.value})
-    }
-
     handleSearch() {
         let search_type = this.state.searchType
         let search_value = this.state.searchValue
         fetchPrograms(search_type, search_value).then(
             (result) => {
                 this.setState({
-                    programs: result.programs
+                    programs: result.programs,
+                    filtered: true
                 });
             },
             (error) => {
@@ -61,10 +59,11 @@ class ProgramRows extends React.Component {
     handleClearFilter() {
         this.setState({
             searchType: '',
-            searchValue: ''
+            searchValue: '',
+            filtered: true
         }, this.handleSearch)
     }
-    
+
     handleInputChange(e) {
         this.setState({[e.target.id]: e.target.value})
     }
@@ -100,7 +99,11 @@ class ProgramRows extends React.Component {
                                     <option value={'all'}>All</option>
                                     <option value={'speaker'}>Speakers</option>
                                     <option value={'prayer'}>Prayers</option>
-                                    <option value={'business'}>Sustaining / Release</option>
+                                    <option value={'release'}>Release</option>
+                                    <option value={'sustaining'}>Sustaining</option>
+                                    <option value={'musical_number'}>Musical Number</option>
+                                    <option value={'program_other'}>Other Program</option>
+                                    <option value={'announcement'}>Announcement</option>
                                     <option value={'notes'}>Notes</option>
                                 </Form.Select>
                             </FloatingLabel>
@@ -132,7 +135,7 @@ class ProgramRows extends React.Component {
     render() {
         return (
             <>
-                <div id={'program-container'}>
+                <div id={'program-container'} >
                     {this.state.programs.map(program => (
                         <ProgramRow key={program.id} currentUser={this.props.currentUser} program={program}
                                     users={this.props.users} hymns={this.props.hymns}/>

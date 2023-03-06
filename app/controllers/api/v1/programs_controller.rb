@@ -5,16 +5,29 @@ module Api
       load_and_authorize_resource
 
       def index
-        @programs = Program.includes(:program_items).order(date: :asc)
+        @programs = Program.includes(:program_items)
+                           .eager_load(:presiding, :conducting, :prep, :chorister, :organist, :opening_hymn,
+                                       :sacrament_hymn, :intermediate_hymn, :closing_hymn)
+                           .order(date: :asc)
+                      .order(ProgramItem.arel_table[:created_at].asc)
 
         if params[:search_value]
-          if params[:search_type]
+          case params[:search_type]
+          when 'prayer'
+            @programs = @programs.where("opening_prayer ilike :val OR closing_prayer ilike :val", val: "%#{params[:search_value]}%")
+          when 'notes'
+            @programs = @programs.where("notes ilike :val", val: "%#{params[:search_value]}%")
+          when 'all'
+            @programs = @programs.where("key ilike :val OR value ilike :val", val: "%#{params[:search_value]}%")
+                          .or(Program.where("notes ilike :val", val: "%#{params[:search_value]}%"))
+                          .or(Program.where("opening_prayer ilike :val OR closing_prayer ilike :val", val: "%#{params[:search_value]}%"))
+          else
             @programs = @programs.where(program_items: { item_type: params[:search_type] })
                                  .where("key ilike :val OR value ilike :val", val: "%#{params[:search_value]}%")
-          else
-
           end
+
         end
+
         @programs.paginate(page: params[:page])
       end
 
