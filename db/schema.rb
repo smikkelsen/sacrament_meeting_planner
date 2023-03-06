@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 2023_02_24_092324) do
     t.integer "closing_hymn_id"
     t.string "opening_prayer"
     t.string "closing_prayer"
+    t.text "notes"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

@@ -3,6 +3,5 @@ class ProgramItem < ApplicationRecord
 
   belongs_to :program
 
-  validates_presence_of :value
-  # validates_presence_of :key, if: -> {item_type.in? [:program_other]}
+  validates_presence_of :item_type, :key
 end

@@ -3,6 +3,7 @@ class Program < ApplicationRecord
   enum meeting_type: { standard: 0, fast_sunday: 1, ward_conference: 2, stake_conference: 3, general_conference: 4 }
 
   has_many :program_items, dependent: :destroy
+  accepts_nested_attributes_for :program_items, allow_destroy: true, reject_if: proc { |attributes| attributes['key'].blank? }
 
   belongs_to :conducting, class_name: 'User', optional: true
   belongs_to :prep, class_name: 'User', optional: true
@@ -18,6 +19,10 @@ class Program < ApplicationRecord
   scope :next, -> { where('date >= ?', Date.today).order(date: :asc).limit(1).first }
   validates_presence_of :date, :meeting_type
   # validates_presence_of :presiding_id, :conducting_id, :chorister_id, :organist_id, if: -> {meeting_type.in? :standard, :fast_sunday, :ward_conference}
+
+  def next_program?
+    self.date.today? || self.date == Date.today.next_occurring(:sunday)
+  end
 
   def self.generate(end_date: nil, start_date: nil, prepper: nil, conducting: nil, organist: nil, chorister: nil, presiding: nil)
     end_date = end_date.nil? ? Date.today.end_of_year : Date.parse(end_date)

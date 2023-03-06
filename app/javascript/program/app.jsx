@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ProgramRows from './ProgramRows';
+import {fetchPrograms, fetchUsers, fetchHymns} from "../common/api";
 
 class App extends React.Component {
 
@@ -16,63 +17,49 @@ class App extends React.Component {
         };
     }
 
-    fetchPrograms() {
-        fetch("/api/v1/programs")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        programs: result.programs
-                    });
-                    this.fetchUsers();
-                },
-                (error) => {
-                    this.setState({
-                        error: error
-                    });
-                }
-            )
-    }
-
-    fetchUsers() {
-        fetch("/api/v1/users")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        users: result.users
-                    });
-                    this.fetchHymns()
-                },
-                (error) => {
-                    this.setState({
-                        error: error
-                    });
-                }
-            )
-    }
-
-    fetchHymns() {
-        fetch("/api/v1/hymns")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        isLoaded: true,
-                        hymns: result.hymns
-                    });
-                },
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error: error
-                    });
-                }
-            )
-    }
 
     componentDidMount() {
-        this.fetchPrograms();
+        fetchPrograms().then(
+            (result) => {
+                this.setState({
+                    programs: result.programs
+                });
+                fetchUsers().then(
+                    (result) => {
+                        this.setState({
+                            users: result.users
+                        });
+                        fetchHymns().then(
+                            (result) => {
+                                this.setState({
+                                    isLoaded: true,
+                                    hymns: result.hymns
+                                });
+                            },
+                            (error) => {
+                                console.log('failed to load hymns');
+                                this.setState({
+                                    isLoaded: true,
+                                    error: error
+                                });
+                            }
+                        )
+                    },
+                    (error) => {
+                        console.log('failed to load users');
+                        this.setState({
+                            error: error
+                        });
+                    }
+                );
+            },
+            (error) => {
+                console.log('failed to load programs');
+                this.setState({
+                    error: error
+                });
+            }
+        );
     }
 
     render() {

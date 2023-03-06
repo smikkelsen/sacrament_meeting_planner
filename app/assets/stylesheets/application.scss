@@ -20,3 +20,8 @@ a:hover {
 .badge.bg-warning {
   color: #2E2F30;
 }
+
+.parent-clickable:hover:not(:has(*:hover)), .clickable:hover {
+  cursor: pointer;
+}
+

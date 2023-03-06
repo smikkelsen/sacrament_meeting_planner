@@ -1,3 +1,1 @@
-json.program do
-  json.(@program, :id, :date, :meeting_type)
-end
+json.partial! @program, partial: "/programs/program.json.jbuilder", as: :program

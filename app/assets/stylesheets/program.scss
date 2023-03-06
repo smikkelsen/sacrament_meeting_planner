@@ -1,13 +1,40 @@
 #body-wrapper {
   #body-content {
+    #open-filter-btn {
+      width: 5em;
+      height: 5em;
+      padding: 13px 18px;
+      border-radius: 60px;
+      font-size: 15px;
+      text-align: center;
+
+      color: white;
+      position: fixed;
+      bottom: 30px;
+      right: 20px;
+      border: #2E2F30;
+      box-shadow: 0 3px 7px 0 rgba(37, 37, 37, 0.5);
+    }
+
     #program-container {
       .program-row {
 
         margin-bottom: 1em;
         padding-top: 1em;
 
-        &:hover {
-          cursor: pointer;
+        &.expanded, &:hover {
+          opacity: 1;
+          box-shadow: 0px 5px 10px 0px rgba(37, 37, 37, 0.5);
+        }
+
+        &.collapsed {
+          height: 175px;
+          overflow: hidden;
+          opacity: .8;
+
+          &:hover {
+            opacity: 1;
+          }
         }
 
         .expand-wrapper {
@@ -68,8 +95,5 @@
       margin-bottom: 1em;
     }
 
-    .input-with-btn {
-      //width:100%;
-    }
   }
 }
