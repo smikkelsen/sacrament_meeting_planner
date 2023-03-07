@@ -9,7 +9,7 @@ module Api
                            .eager_load(:presiding, :conducting, :prep, :chorister, :organist, :opening_hymn,
                                        :sacrament_hymn, :intermediate_hymn, :closing_hymn)
                            .order(date: :asc)
-                      .order(ProgramItem.arel_table[:created_at].asc)
+                           .order(ProgramItem.arel_table[:created_at].asc)
 
         if params[:search_value]
           case params[:search_type]
@@ -19,13 +19,19 @@ module Api
             @programs = @programs.where("notes ilike :val", val: "%#{params[:search_value]}%")
           when 'all'
             @programs = @programs.where("key ilike :val OR value ilike :val", val: "%#{params[:search_value]}%")
-                          .or(Program.where("notes ilike :val", val: "%#{params[:search_value]}%"))
-                          .or(Program.where("opening_prayer ilike :val OR closing_prayer ilike :val", val: "%#{params[:search_value]}%"))
+                                 .or(Program.where("notes ilike :val", val: "%#{params[:search_value]}%"))
+                                 .or(Program.where("opening_prayer ilike :val OR closing_prayer ilike :val", val: "%#{params[:search_value]}%"))
           else
             @programs = @programs.where(program_items: { item_type: params[:search_type] })
                                  .where("key ilike :val OR value ilike :val", val: "%#{params[:search_value]}%")
           end
 
+        end
+        if params[:start_date].blank? && params[:end_date].blank?
+          @programs = @programs.where('date > ?', 3.weeks.ago)
+        else
+          @programs = @programs.where('date < ?', params[:end_date]).order(date: :desc) if params[:end_date].present?
+          @programs = @programs.where('date > ?', params[:start_date]).order(date: :asc) if params[:start_date].present?
         end
 
         @programs.paginate(page: params[:page])

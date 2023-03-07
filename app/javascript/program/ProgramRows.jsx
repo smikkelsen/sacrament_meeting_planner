@@ -10,6 +10,8 @@ import Col from 'react-bootstrap/Col';
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
 import {fetchPrograms} from "../common/api";
+import {scrollIntoViewWithOffset} from '../common/utils';
+
 
 class ProgramRows extends React.Component {
 
@@ -33,8 +35,7 @@ class ProgramRows extends React.Component {
     }
 
     scrollToCurrent() {
-        let element = document.getElementById("current-program");
-        element.scrollIntoView({behavior: 'smooth', block: 'start'});
+        scrollIntoViewWithOffset("#current-program", 80)
     }
 
     handleSearch() {
@@ -135,12 +136,19 @@ class ProgramRows extends React.Component {
     render() {
         return (
             <>
-                <div id={'program-container'} >
+                <Col sm={12}>
+                    <Button className={'load-more-btn'} variant={"secondary"}>Load More</Button>
+                </Col>
+                <div id={'program-container'}>
                     {this.state.programs.map(program => (
                         <ProgramRow key={program.id} currentUser={this.props.currentUser} program={program}
                                     users={this.props.users} hymns={this.props.hymns}/>
                     ))}
                 </div>
+                <Col sm={12}>
+                    <Button className={'load-more-btn'} variant={"secondary"}>Load More</Button>
+                </Col>
+
                 {this.renderFilterModal()}
                 <Button id={'open-filter-btn'} variant={"info"}
                         onClick={() => this.setState({showFilterModal: true})}>
