@@ -53,7 +53,8 @@ class ProgramRows extends React.Component {
             (result) => {
                 this.setState({
                     programs: result.programs,
-                    filtered: true
+                    filtered: true,
+                    loadMore: {top: false, bottom: false}
                 });
             },
             (error) => {
@@ -69,6 +70,7 @@ class ProgramRows extends React.Component {
         this.setState({
             searchType: '',
             searchValue: '',
+            loadMore: {top: true, bottom: true},
             filtered: true
         }, this.handleSearch)
     }
@@ -128,14 +130,14 @@ class ProgramRows extends React.Component {
         if (this.state.loadMore[direction]) {
             return (
                 <Col className={'load-more-wrapper'} sm={12}>
-                <Button variant={"secondary"}
-                        onClick={(e) => this.handleLoadMore(direction)}>Load More</Button>
+                    <Button variant={"secondary"}
+                            onClick={(e) => this.handleLoadMore(direction)}>Load More</Button>
                 </Col>
             )
         } else {
             return (
                 <Col className={'load-more-wrapper'} sm={12}>
-                <span>No more programs to load</span>
+                    <span>No more programs to load</span>
                 </Col>
             )
         }
