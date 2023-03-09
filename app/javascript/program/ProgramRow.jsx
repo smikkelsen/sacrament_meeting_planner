@@ -40,6 +40,7 @@ class ProgramRow extends React.Component {
         this.renderPrayersNeeded = this.renderPrayersNeeded.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.renderFormSubmitButton = this.renderFormSubmitButton.bind(this);
+        this.dateFormatStr = this.dateFormatStr.bind(this);
 
         this.state = {
             showEditModal: false,
@@ -48,14 +49,6 @@ class ProgramRow extends React.Component {
             dirty: false
         };
     }
-
-    // componentDidUpdate(prevProps, prevState, snapshot) {
-    //     if (!_.isEqual(prevState.program, this.state.program)) {
-    //         if (!prevState.dirty && !this.state.dirty) {
-    //             this.setState({dirty: true})
-    //         }
-    //     }
-    // }
 
     handleEdit(_e) {
         this.setState({showEditModal: true})
@@ -237,6 +230,19 @@ class ProgramRow extends React.Component {
         return (this.state.dirty ? <Button variant={"success"} onClick={(e) => this.submitForm(e)}>Save</Button> : '')
     }
 
+    dateFormatStr() {
+        let date = this.state.program.date;
+        let year = formatDateString(date, 'yyyy');
+        let today = new Date().getFullYear();
+        today = formatDateString(today, 'yyyy');
+        if (_.isEqual(today, year)) {
+            return ('MMM do')
+        } else {
+            return ('MMM do yyyy')
+        }
+
+    }
+
     render() {
         const {program} = this.state;
         let renderParentClickable = `collapsable ${this.state.expanded ? 'parent-clickable' : ''}`;
@@ -255,7 +261,7 @@ class ProgramRow extends React.Component {
                             <Row>
                                 <Col sm={12}>
                                     <div
-                                        className={'date col-sm-12 col-md-auto '}>{formatDateString(program.date, 'MMM do')}</div>
+                                        className={'date col-sm-12 col-md-auto '}>{formatDateString(program.date, this.dateFormatStr())}</div>
                                     <div className={'meeting-type text-info col-sm-12 col-md-auto'}>
                                         {this.renderMeetingType(program.meeting_type)}
                                     </div>

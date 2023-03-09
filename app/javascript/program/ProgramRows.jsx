@@ -18,15 +18,18 @@ class ProgramRows extends React.Component {
     constructor(props) {
         super(props);
         this.renderFilterModal = this.renderFilterModal.bind(this);
+        this.renderLoadMoreButton = this.renderLoadMoreButton.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleClearFilter = this.handleClearFilter.bind(this);
+        this.handleLoadMore = this.handleLoadMore.bind(this);
 
         this.state = {
             programs: this.props.programs,
             showFilterModal: false,
             filtered: false,
             searchType: 'all',
-            searchValue: ''
+            searchValue: '',
+            loadMore: {top: true, bottom: true}
         };
     }
 
@@ -39,9 +42,14 @@ class ProgramRows extends React.Component {
     }
 
     handleSearch() {
-        let search_type = this.state.searchType
-        let search_value = this.state.searchValue
-        fetchPrograms(search_type, search_value).then(
+        let params = {}
+        if (this.state.searchType) {
+            params['search_type'] = this.state.searchType
+        }
+        if (this.state.searchValue) {
+            params['search_value'] = this.state.searchValue
+        }
+        fetchPrograms(params).then(
             (result) => {
                 this.setState({
                     programs: result.programs,
@@ -69,6 +77,44 @@ class ProgramRows extends React.Component {
         this.setState({[e.target.id]: e.target.value})
     }
 
+    handleLoadMore(direction) {
+        let params = {}
+        let date = null
+        if (direction === 'top') {
+            date = this.state.programs.sort((a, b) => a.date - b.date)[0].date;
+            console.log(date);
+            params['end_date'] = date
+        } else {
+            date = this.state.programs.sort((a, b) => a.date - b.date).at(-1).date;
+            console.log(date);
+            params['start_date'] = date
+
+        }
+
+        fetchPrograms(params).then(
+            (result) => {
+                console.log(result)
+                let newPrograms = result.programs.sort((a, b) => a.date - b.date);
+                let loadMore = (newPrograms.length > 0);
+                if (direction === 'top') {
+                    newPrograms = newPrograms.concat(this.state.programs)
+                } else {
+                    newPrograms = this.state.programs.concat(newPrograms)
+                }
+                this.setState({
+                    programs: newPrograms,
+                    loadMore: {...this.state.loadMore, [direction]: loadMore}
+                });
+            },
+            (error) => {
+                console.log('failed to load programs');
+                this.setState({
+                    error: error
+                });
+            }
+        );
+    }
+
     renderInputValue(attributeId) {
         let val = _.get(this.state, attributeId)
         if (val) {
@@ -76,6 +122,24 @@ class ProgramRows extends React.Component {
         } else {
             return ('')
         }
+    }
+
+    renderLoadMoreButton(direction) {
+        if (this.state.loadMore[direction]) {
+            return (
+                <Col className={'load-more-wrapper'} sm={12}>
+                <Button variant={"secondary"}
+                        onClick={(e) => this.handleLoadMore(direction)}>Load More</Button>
+                </Col>
+            )
+        } else {
+            return (
+                <Col className={'load-more-wrapper'} sm={12}>
+                <span>No more programs to load</span>
+                </Col>
+            )
+        }
+
     }
 
     renderFilterModal() {
@@ -136,18 +200,14 @@ class ProgramRows extends React.Component {
     render() {
         return (
             <>
-                <Col sm={12}>
-                    <Button className={'load-more-btn'} variant={"secondary"}>Load More</Button>
-                </Col>
+                {this.renderLoadMoreButton('top')}
                 <div id={'program-container'}>
                     {this.state.programs.map(program => (
                         <ProgramRow key={program.id} currentUser={this.props.currentUser} program={program}
                                     users={this.props.users} hymns={this.props.hymns}/>
                     ))}
                 </div>
-                <Col sm={12}>
-                    <Button className={'load-more-btn'} variant={"secondary"}>Load More</Button>
-                </Col>
+                {this.renderLoadMoreButton('bottom')}
 
                 {this.renderFilterModal()}
                 <Button id={'open-filter-btn'} variant={"info"}

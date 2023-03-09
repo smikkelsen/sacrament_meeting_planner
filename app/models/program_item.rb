@@ -4,4 +4,5 @@ class ProgramItem < ApplicationRecord
   belongs_to :program
 
   validates_presence_of :item_type, :key
+  self.per_page = 10
 end

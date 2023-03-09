@@ -34,7 +34,7 @@ module Api
           @programs = @programs.where('date > ?', params[:start_date]).order(date: :asc) if params[:start_date].present?
         end
 
-        @programs.paginate(page: params[:page])
+        @programs = @programs.limit(300).distinct
       end
 
       def show
