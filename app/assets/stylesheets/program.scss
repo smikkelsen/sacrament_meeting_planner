@@ -1,102 +1,105 @@
 #body-wrapper {
   #body-content {
-    #open-filter-btn {
-      width: 5em;
-      height: 5em;
-      padding: 13px 18px;
-      border-radius: 60px;
-      font-size: 15px;
-      text-align: center;
+    #programs-content {
 
-      color: white;
-      position: fixed;
-      bottom: 30px;
-      right: 20px;
-      border: #2E2F30;
-      box-shadow: 0 3px 7px 0 rgba(37, 37, 37, 0.5);
-    }
+      #open-filter-btn {
+        width: 5em;
+        height: 5em;
+        padding: 13px 18px;
+        border-radius: 60px;
+        font-size: 15px;
+        text-align: center;
 
-    .load-more-wrapper {
-      text-align: center;
-      margin-bottom: 20px;
-
-      button {
-        width: 100%;
+        color: white;
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        border: #2E2F30;
+        box-shadow: 0 3px 7px 0 rgba(37, 37, 37, 0.5);
       }
 
-      span {
-        font-size: 1.5em;
+      .load-more-wrapper {
+        text-align: center;
+        margin-bottom: 20px;
+
+        button {
+          width: 100%;
+        }
+
+        span {
+          font-size: 1.5em;
+        }
       }
-    }
 
-    #program-container {
-      .program-row {
+      #program-container {
+        .program-row {
 
-        margin-bottom: 1em;
-        padding-top: 1em;
-
-        &.expanded, &:hover {
-          opacity: 1;
-          box-shadow: 0px 5px 10px 0px rgba(37, 37, 37, 0.5);
-        }
-
-        &.collapsed {
-          height: 175px;
-          overflow: hidden;
-          opacity: .8;
-
-          &:hover {
-            opacity: 1;
-          }
-        }
-
-        .expand-wrapper {
-          height: 0;
-        }
-
-        .row {
-          padding: 5px;
-        }
-
-        .date {
-          font-size: 1.8em;
-          font-weight: bold;
-          padding-top: 5px;
-          padding-bottom: 5px;
-        }
-
-        .meeting-type {
-          font-size: 1.2em;
-          font-weight: bold;
-          padding-top: 5px;
-          padding-bottom: 5px;
-        }
-
-        .item-label {
-          font-weight: bold;
-        }
-
-        .card {
           margin-bottom: 1em;
-          background-color: ghostwhite;
+          padding-top: 1em;
 
-          &.program {
-            background-color: #eef1fd;
+          &.expanded, &:hover {
+            opacity: 1;
+            box-shadow: 0px 5px 10px 0px rgba(37, 37, 37, 0.5);
           }
 
-          &.music {
-            background-color: azure;
+          &.collapsed {
+            height: 175px;
+            overflow: hidden;
+            opacity: .8;
+
+            &:hover {
+              opacity: 1;
+            }
           }
 
-          &.prayers {
-            background-color: #fffbee;
+          .expand-wrapper {
+            height: 0;
           }
 
-          .card-body {
-            line-height: 1.4em;
+          .row {
+            padding: 5px;
           }
+
+          .date {
+            font-size: 1.8em;
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 5px;
+          }
+
+          .meeting-type {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 5px;
+          }
+
+          .item-label {
+            font-weight: bold;
+          }
+
+          .card {
+            margin-bottom: 1em;
+            background-color: ghostwhite;
+
+            &.program {
+              background-color: #eef1fd;
+            }
+
+            &.music {
+              background-color: azure;
+            }
+
+            &.prayers {
+              background-color: #fffbee;
+            }
+
+            .card-body {
+              line-height: 1.4em;
+            }
+          }
+
         }
-
       }
     }
   }

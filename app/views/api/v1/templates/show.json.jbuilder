@@ -1,0 +1,1 @@
+json.partial! @template, partial: "/templates/template.json.jbuilder", as: :template

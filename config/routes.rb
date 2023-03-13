@@ -8,14 +8,17 @@ Rails.application.routes.draw do
 
   get 'programs', to: 'pages#programs', as: :programs_page
   get 'hymns', to: 'pages#hymns', as: :hymns_page
+  get 'templates', to: 'pages#templates', as: :templates_page
   get 'music', to: 'pages#music', as: :music_page
   get 'dashboard', to: 'pages#dashboard', as: :dashboard_page
 
   namespace :api do
     namespace :v1 do
       resources :hymns, only: [:index, :show]
+      resources :templates, only: [:index, :show]
       resources :programs, only: [:index, :show, :update]
-      resources :users, only: [:index, :show]
+      get '/users/current', to: 'users#current'
+      resources :users, only: [:index, :show] 
     end
   end
 

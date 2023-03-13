@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from '../hymn/app';
+import App from '../template/app';
 
 ReactDOM.render(
     <App name="React" />,
-    document.getElementById('hymns-content'),
+    document.getElementById('templates-content'),
 );

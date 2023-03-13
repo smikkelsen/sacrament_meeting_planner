@@ -8,6 +8,9 @@ class PagesController < ApplicationController
   def hymns
   end
 
+  def templates
+  end
+
   def programs
   end
 end

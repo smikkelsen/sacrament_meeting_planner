@@ -14,7 +14,7 @@ module Api
       private
 
       def set_hymn
-        @task = Hymn.find(params[:id])
+        @hymn = Hymn.find(params[:id])
       end
     end
   end

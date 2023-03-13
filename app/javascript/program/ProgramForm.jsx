@@ -22,6 +22,7 @@ class ProgramForm extends React.Component {
 
     constructor(props) {
         super(props);
+        this.renderInputValue = this.renderInputValue.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleNestedObjChange = this.handleNestedObjChange.bind(this);
         this.hasRole = this.hasRole.bind(this);

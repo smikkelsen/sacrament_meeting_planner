@@ -11,10 +11,15 @@ module Api
       def show
       end
 
+      def current
+        @user = current_user
+        render :show
+      end
+
       private
 
       def set_user
-        @users = User.find(params[:id])
+        @user = User.find(params[:id])
       end
     end
   end
