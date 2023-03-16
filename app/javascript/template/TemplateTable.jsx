@@ -12,6 +12,9 @@ class TemplateTable extends React.Component {
     constructor(props) {
         super(props);
         this.handleTemplateClick = this.handleTemplateClick.bind(this);
+        this.handleTemplateFormUpdate = this.handleTemplateFormUpdate.bind(this);
+        this.handleCreateTemplate = this.handleCreateTemplate.bind(this);
+        this.updateTemplateRow = this.updateTemplateRow.bind(this);
         this.state = {
             showModal: false,
             templates: this.props.templates,
@@ -19,6 +22,20 @@ class TemplateTable extends React.Component {
         };
     }
 
+    handleTemplateFormUpdate(template) {
+        if(template) {
+            this.updateTemplateRow(template)
+        }
+        this.setState({template: template})
+    }
+
+    updateTemplateRow(template) {
+        let newTemplates = this.state.templates.map(t => (
+            t.id === template.id ? template : t));
+        this.setState({
+            templates: newTemplates
+        })
+    }
 
     handleTemplateClick(template, e) {
         this.setState({
@@ -28,8 +45,16 @@ class TemplateTable extends React.Component {
 
     renderEdit() {
         return (
-            <TemplateForm template={this.state.template}/>
+            <TemplateForm template={this.state.template}
+                          handleToUpdate={this.handleTemplateFormUpdate.bind(this)}
+            />
         )
+    }
+
+    handleCreateTemplate() {
+        this.setState({
+            template: {id: '', template_type: '', name: '', body: ''}
+        })
     }
 
     renderTable() {
@@ -51,14 +76,14 @@ class TemplateTable extends React.Component {
                     ))}
                     </tbody>
                 </Table>
+                <Button onClick={(_e) => this.handleCreateTemplate()}>New Template</Button>
+
             </div>
         );
     }
 
     render() {
         return (this.state.template ? this.renderEdit() : this.renderTable())
-
-
     }
 }
 

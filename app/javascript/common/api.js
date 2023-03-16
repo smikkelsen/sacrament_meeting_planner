@@ -36,3 +36,23 @@ export const fetchTemplates = () => {
             .then(res => res.json())
     )
 }
+
+export const upsertTemplate = (payload) => {
+    let url = "/api/v1/templates/"
+    let method = "POST"
+    if (payload.id) {
+        url = url + payload.id
+        method = "PUT"
+    }
+    return (
+        fetch(url, {
+            method: method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+    )
+}

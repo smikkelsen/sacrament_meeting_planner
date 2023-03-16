@@ -15,13 +15,13 @@ module VariableReplacement
 
       DELEGATE_HYMNS.each do |hymn|
         define_method(hymn) do
-          meta_hymn(self.method_name)
+          meta_hymn(hymn)
         end
       end
 
       DELEGATE_USERS.each do |user|
         define_method(user) do
-          meta_user(self.method_name)
+          meta_user(user)
         end
       end
 
@@ -49,10 +49,18 @@ module VariableReplacement
         val
       end
 
+      def all_program_items
+        return @all_program_items if @all_program_items
+        @all_program_items = @args[:all_program_items]
+        @all_program_items ||= program.program_items.order(:created_at).to_a rescue nil
+        @all_program_items ||= []
+        @all_program_items
+      end
+
       def program_items
         return @program_items if @program_items
         @program_items = @args[:program_items]
-        @program_items ||= program.program_items.order(:created_at).to_a rescue nil
+        @program_items ||= program.program_items.where(item_type: %w(speaker musical_number program_other)).order(:created_at).to_a rescue nil
         @program_items ||= []
         @program_items
       end

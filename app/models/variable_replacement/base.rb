@@ -15,19 +15,35 @@ class VariableReplacement::Base
     raise 'must be called by subclass'
   end
 
-  # These are special nested objects that allows the user to access a value from a specific array of objects
+  def prep_conditional_block_variables(query)
+    matches = query.scan(/\{!!if_present\}(.+?)\{!!end_if_present\}/m) unless query.nil?
+    matches&.each do |match|
+      contents = match[0]
+      new_contents = contents
+      new_contents = prep_iterative_variables(new_contents, false)
+      new_contents = prep_built_in_variables(new_contents, false)
+      new_contents = prep_collection_variables(new_contents, false)
+      new_contents = prep_nested_object_variables(new_contents, false)
+      matches = new_contents.scan(/\{!(.+?)\}/)
+      val = matches.any? ? '' : contents
+      query = query.gsub("{!!if_present}#{contents}{!!end_if_present}", val) # remove the whole block
+
+    end
+    query
+  end
+
+  # These are nested objects that allows the user to access a value from a specific objects
   # Like if many program_items were used in the program, this would allow them to access program_item 2 for example.
-  # be sure to add any new objects to nested_objects definition
+  # be sure to add any new objects to collection_objects definition
   # {!program_items[1][key]}
   # {!program_items[1][value]}
   # {!speakers[1][key]}
-  def prep_nested_obj_variables(query)
+  def prep_nested_object_variables(query, replace_blank = true)
     unless query.nil?
-      matches = query.scan(/\{!(.+?)\[(\d+?)\]\[(.+?)\]\}/)
+      matches = query.scan(/\{!(.+?)\[(.+?)\]\}/)
       matches.each do |match|
         obj = match[0].to_s.downcase
-        p_index = match[1].to_i - 1
-        attribute = match[2].to_s.downcase
+        attribute = match[1].to_s.downcase
 
         # Security Check (make sure they can only access data I say they can...)
         perm = nested_objects.find { |a| a[:obj].casecmp(obj) == 0 }
@@ -37,11 +53,45 @@ class VariableReplacement::Base
           if obj.nil?
             value = ''
           else
+            value = obj.send(attribute).to_s rescue nil
+          end
+          value ||= ''
+          query = query.gsub("{!#{match[0]}[#{match[1]}]}", value) unless value.blank? && !replace_blank
+          query
+        end
+      end
+
+    end
+    query
+  end
+
+  # These are collections of objects that allows the user to access a value from a specific member in the array of objects
+  # Like if many program_items were used in the program, this would allow them to access program_item 2 for example.
+  # be sure to add any new objects to collection_objects definition
+  # {!program_items[1][key]}
+  # {!program_items[1][value]}
+  # {!speakers[1][key]}
+  def prep_collection_variables(query, replace_blank = true)
+    unless query.nil?
+      matches = query.scan(/\{!(.+?)\[(\d+?)\]\[(.+?)\]\}/)
+      matches.each do |match|
+        obj = match[0].to_s.downcase
+        p_index = match[1].to_i - 1
+        attribute = match[2].to_s.downcase
+
+        # Security Check (make sure they can only access data I say they can...)
+        perm = collection_objects.find { |a| a[:obj].casecmp(obj) == 0 }
+        if perm && perm[:attributes].include?(attribute)
+
+          obj = eval(obj)
+          if obj.nil?
+            value = ''
+          else
             value = obj[p_index].attributes[attribute].to_s rescue nil
           end
           value ||= ''
-          query = query.gsub("{!#{match[0]}[#{match[1]}][#{match[2]}]}", value) rescue ''
-
+          query = query.gsub("{!#{match[0]}[#{match[1]}][#{match[2]}]}", value) unless value.blank? && !replace_blank
+          query
         end
       end
 
@@ -55,15 +105,14 @@ class VariableReplacement::Base
   #   name: {!key}
   #   topic: {!value}
   # {!!end}
-  def prep_iterative_variables(query)
-    matches = query.scan(/\{!!(.+?)}(.+?){!!end}/) unless query.nil?
-
+  def prep_iterative_variables(query, replace_blank = true)
+    matches = query.scan(/\{!!(.+?)\}(.+?)\{!!end\}/m) unless query.nil?
     matches&.each do |match|
       obj_name = match[0]
       contents = match[1]
       new_contents = ''
       # Security Check (make sure they can only access data I say they can...)
-      perm = nested_objects.find { |a| a[:obj].casecmp(obj_name) == 0 }
+      perm = collection_objects.find { |a| a[:obj].casecmp(obj_name) == 0 }
       next unless perm
       objects = eval(obj_name)
       attribute_matches = contents.scan(/\{!(.+?)\}/) unless contents.nil?
@@ -78,18 +127,21 @@ class VariableReplacement::Base
             value = obj.attributes[attribute].to_s rescue nil
           end
           value ||= ''
-          obj_contents = obj_contents.gsub("{!#{attribute}}", value)
+          obj_contents = obj_contents.gsub("{!#{attribute}}", value) unless value.blank? && !replace_blank
         end
         new_contents = new_contents + obj_contents
       end
-      query = query.gsub( "{!!#{obj_name}}#{contents}{!!end}", new_contents )
+      if objects.empty? && !replace_blank # don't remove the contents if replace_blank is false
+        new_contents = contents
+      end
+      query = query.gsub("{!!#{obj_name}}#{contents}{!!end}", new_contents)
     end
     query
   end
 
   # These are built in variables (defined in the 'system_vars' class method)
   # {!OpeningPrayer}
-  def prep_built_in_variables(query)
+  def prep_built_in_variables(query, replace_blank = true)
     matches = query.scan(/\{!(.+?)\}/) unless query.nil?
 
     # Check matches against built in variables
@@ -107,7 +159,8 @@ class VariableReplacement::Base
           value = add_formatters(value, formatters)
         end
         value ||= ''
-        query = query.gsub(/{!#{var[:name]}}/i, value) rescue ''
+        query = query.gsub(/{!#{var[:name]}}/i, value) unless value.blank? && !replace_blank
+        query
       end
     end
 
@@ -121,15 +174,32 @@ class VariableReplacement::Base
     value
   end
 
-  def nested_objects
+  def collection_objects
+    program_items_attributes = %w[id key value item_type]
     vars = Array.new
-    vars << { obj: 'program_items', attributes: %w[id key value item_type] }
-    vars << { obj: 'speakers', attributes: %w[id key value item_type] }
-    vars << { obj: 'musical_numbers', attributes: %w[id key value item_type] }
-    vars << { obj: 'program_others', attributes: %w[id key value item_type] }
-    vars << { obj: 'announcements', attributes: %w[id key value item_type] }
-    vars << { obj: 'releases', attributes: %w[id key value item_type] }
-    vars << { obj: 'sustainings', attributes: %w[id key value item_type] }
+    vars << { obj: 'all_program_items', attributes: program_items_attributes }
+    vars << { obj: 'program_items', attributes: program_items_attributes }
+    vars << { obj: 'speakers', attributes: program_items_attributes }
+    vars << { obj: 'musical_numbers', attributes: program_items_attributes }
+    vars << { obj: 'program_others', attributes: program_items_attributes }
+    vars << { obj: 'announcements', attributes: program_items_attributes }
+    vars << { obj: 'releases', attributes: program_items_attributes }
+    vars << { obj: 'sustainings', attributes: program_items_attributes }
+  end
+
+  def nested_objects
+    user_attributes = %w[id first_name last_name full_name email]
+    hymn_attributes = %w[id name page category]
+    vars = Array.new
+    vars << { obj: 'presiding', attributes: user_attributes }
+    vars << { obj: 'conducting', attributes: user_attributes }
+    vars << { obj: 'prep', attributes: user_attributes }
+    vars << { obj: 'chorister', attributes: user_attributes }
+    vars << { obj: 'organist', attributes: user_attributes }
+    vars << { obj: 'opening_hymn', attributes: hymn_attributes }
+    vars << { obj: 'sacrament_hymn', attributes: hymn_attributes }
+    vars << { obj: 'intermediate_hymn', attributes: hymn_attributes }
+    vars << { obj: 'closing_hymn', attributes: hymn_attributes }
   end
 
 end

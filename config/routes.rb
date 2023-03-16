@@ -12,10 +12,12 @@ Rails.application.routes.draw do
   get 'music', to: 'pages#music', as: :music_page
   get 'dashboard', to: 'pages#dashboard', as: :dashboard_page
 
+  get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
+
   namespace :api do
     namespace :v1 do
       resources :hymns, only: [:index, :show]
-      resources :templates, only: [:index, :show]
+      resources :templates, only: [:index, :show, :create, :update]
       resources :programs, only: [:index, :show, :update]
       get '/users/current', to: 'users#current'
       resources :users, only: [:index, :show] 

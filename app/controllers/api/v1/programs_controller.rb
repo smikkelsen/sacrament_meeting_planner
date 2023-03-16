@@ -1,7 +1,7 @@
 module Api
   module V1
     class ProgramsController < ApplicationController
-      before_action :set_program, only: [:show, :update]
+      before_action :set_program, only: [:show, :update, :generate_template]
       load_and_authorize_resource
 
       def index
@@ -38,6 +38,16 @@ module Api
       end
 
       def show
+      end
+
+      def generate_template
+        @template = Template.find(params[:template_id])
+          respond_to do |format|
+            format.html
+            format.pdf do
+              render pdf: "file_name"   # Excluding ".pdf" extension.
+            end
+          end
       end
 
       def update

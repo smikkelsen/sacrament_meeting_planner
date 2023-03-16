@@ -34,3 +34,6 @@ gem 'google-id-token'
 gem 'oauth2', '1.4.7'
 gem 'cancancan'
 gem 'will_paginate'
+
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'

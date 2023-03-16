@@ -46,4 +46,10 @@ class Program < ApplicationRecord
       next_date = next_date.next_occurring(:sunday)
     end
   end
+
+  def template_replacement(template_id)
+    template = Template.find(template_id)
+    v = VariableReplacement::ConductingTemplateVariables.new(program: self)
+    v.prep_query_string(template.body)
+  end
 end

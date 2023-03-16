@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRef } from 'react';
+import {useRef} from 'react';
 import PropTypes from 'prop-types';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
@@ -10,7 +10,8 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
-import { Editor } from '@tinymce/tinymce-react';
+import {Editor} from '@tinymce/tinymce-react';
+import {upsertTemplate} from "../common/api";
 
 // const editorRef = useRef(null);
 
@@ -23,6 +24,7 @@ class TemplateForm extends React.Component {
         this.renderInputValue = this.renderInputValue.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.handleClose = this.handleClose.bind(this);
 
         this.editorRef = React.createRef(null);
         this.state = {
@@ -32,17 +34,35 @@ class TemplateForm extends React.Component {
 
 
     handleSave() {
-        console.log(this.editorRef.current.getContent())
+        let payload = this.state.template
+        payload.body = this.editorRef.current.getContent()
+        upsertTemplate(payload).then(
+            (result) => {
+                this.props.handleToUpdate(result)
+                this.setState({template: result})
+            },
+            (error) => {
+                console.log('error saving program')
+                console.log(error)
+                this.setState({
+                    error: error
+                });
+            }
+        )
+    }
+
+    handleClose() {
+        this.props.handleToUpdate(null)  // set template to null in parent component
     }
 
     handleInputChange(e) {
         this.setState(prevState => {
-            return {program: {...prevState.program, [e.target.id]: e.target.value}}
-        }, this.props.handleToDirty(true))
+            return {template: {...prevState.template, [e.target.id]: e.target.value}}
+        })
     }
 
     renderInputValue(attributeId) {
-        let val = _.get(this.state.program, attributeId)
+        let val = _.get(this.state.template, attributeId)
         if (val) {
             return (val)
         } else {
@@ -53,11 +73,7 @@ class TemplateForm extends React.Component {
     render() {
         return (
             <Row>
-                <Col sm={12}>
-                <span>Go Back</span>
-                </Col>
-                <Col sm={12}>
-
+                <Col sm={12} md={6}>
                     <Form>
                         <FloatingLabel className={''} label={'Template Type'} controlId={'template_type'}>
                             <Form.Select
@@ -70,6 +86,15 @@ class TemplateForm extends React.Component {
                             </Form.Select>
                         </FloatingLabel>
                     </Form>
+                </Col>
+                <Col md={6} sm={12}>
+                    <FloatingLabel className={'input-row'} label={'Name'}
+                                   controlId={'name'}>
+                        <Form.Control
+                            value={this.renderInputValue('name')}
+                            onChange={(e) => this.handleInputChange(e)}
+                        />
+                    </FloatingLabel>
                 </Col>
                 <Col sm={12}>
                     <Editor
@@ -92,6 +117,7 @@ class TemplateForm extends React.Component {
                         }}
                     />
                     <Button onClick={(_e) => this.handleSave()}>Save</Button>
+                    <Button onClick={(_e) => this.handleClose()}>Close</Button>
                 </Col>
             </Row>
         )
