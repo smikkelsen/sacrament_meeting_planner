@@ -25,9 +25,11 @@ class TemplateForm extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleDirty = this.handleDirty.bind(this);
 
         this.editorRef = React.createRef(null);
         this.state = {
+            dirty: false,
             template: this.props.template
         };
     }
@@ -39,7 +41,7 @@ class TemplateForm extends React.Component {
         upsertTemplate(payload).then(
             (result) => {
                 this.props.handleToUpdate(result)
-                this.setState({template: result})
+                this.setState({template: result, dirty: false})
             },
             (error) => {
                 console.log('error saving program')
@@ -55,9 +57,15 @@ class TemplateForm extends React.Component {
         this.props.handleToUpdate(null)  // set template to null in parent component
     }
 
+    handleDirty(e) {
+        this.setState({
+            dirty: true
+        });
+    }
+
     handleInputChange(e) {
         this.setState(prevState => {
-            return {template: {...prevState.template, [e.target.id]: e.target.value}}
+            return {dirty: true, template: {...prevState.template, [e.target.id]: e.target.value}}
         })
     }
 
@@ -73,6 +81,15 @@ class TemplateForm extends React.Component {
     render() {
         return (
             <Row>
+                <Col md={6} sm={12}>
+                    <FloatingLabel className={'input-row'} label={'Name'}
+                                   controlId={'name'}>
+                        <Form.Control
+                            value={this.renderInputValue('name')}
+                            onChange={(e) => this.handleInputChange(e)}
+                        />
+                    </FloatingLabel>
+                </Col>
                 <Col sm={12} md={6}>
                     <Form>
                         <FloatingLabel className={''} label={'Template Type'} controlId={'template_type'}>
@@ -87,18 +104,10 @@ class TemplateForm extends React.Component {
                         </FloatingLabel>
                     </Form>
                 </Col>
-                <Col md={6} sm={12}>
-                    <FloatingLabel className={'input-row'} label={'Name'}
-                                   controlId={'name'}>
-                        <Form.Control
-                            value={this.renderInputValue('name')}
-                            onChange={(e) => this.handleInputChange(e)}
-                        />
-                    </FloatingLabel>
-                </Col>
-                <Col sm={12}>
+                <Col sm={12} className={'tinymce-wrapper'}>
                     <Editor
                         apiKey='jd31kzsrcz9m10ec8zphid3sicr70zflgld4iv3ps3q6bl5w'
+                        onChange={(e) => this.handleDirty(e)}
                         onInit={(evt, editor) => this.editorRef.current = editor}
                         initialValue={this.renderInputValue('body')}
                         init={{
@@ -116,9 +125,21 @@ class TemplateForm extends React.Component {
                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                         }}
                     />
-                    <Button onClick={(_e) => this.handleSave()}>Save</Button>
-                    <Button onClick={(_e) => this.handleClose()}>Close</Button>
+
                 </Col>
+                <Col sm={12}>
+                    <Button variant={'success'}
+                            disabled={!this.state.dirty} 
+                            className={'mr-2'}
+                            onClick={(_e) => this.handleSave()}>
+                        Save
+                    </Button>
+                    <Button variant={this.state.dirty ? 'danger' : 'secondary'}
+                            onClick={(_e) => this.handleClose()}>
+                        Cancel
+                    </Button>
+                </Col>
+
             </Row>
         )
 

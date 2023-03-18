@@ -47,15 +47,10 @@ class VariableReplacement::Base
 
         # Security Check (make sure they can only access data I say they can...)
         perm = nested_objects.find { |a| a[:obj].casecmp(obj) == 0 }
-        if perm && perm[:attributes].include?(attribute)
+        if perm && perm[:attributes].include?(attribute.split('|')[0])
 
           obj = eval(obj)
-          if obj.nil?
-            value = ''
-          else
-            value = obj.send(attribute).to_s rescue nil
-          end
-          value ||= ''
+          value = get_value(obj, attribute)
           query = query.gsub("{!#{match[0]}[#{match[1]}]}", value) unless value.blank? && !replace_blank
           query
         end
@@ -84,12 +79,7 @@ class VariableReplacement::Base
         if perm && perm[:attributes].include?(attribute)
 
           obj = eval(obj)
-          if obj.nil?
-            value = ''
-          else
-            value = obj[p_index].attributes[attribute].to_s rescue nil
-          end
-          value ||= ''
+          value = get_value(obj[p_index], attribute)
           query = query.gsub("{!#{match[0]}[#{match[1]}][#{match[2]}]}", value) unless value.blank? && !replace_blank
           query
         end
@@ -120,13 +110,8 @@ class VariableReplacement::Base
         obj_contents = contents
         attribute_matches&.each do |attribute_match|
           attribute = attribute_match.first
-          next unless perm[:attributes].include?(attribute)
-          if obj.nil?
-            value = ''
-          else
-            value = obj.attributes[attribute].to_s rescue nil
-          end
-          value ||= ''
+          next unless perm[:attributes].include?(attribute.split('|')[0])
+          value = get_value(obj, attribute)
           obj_contents = obj_contents.gsub("{!#{attribute}}", value) unless value.blank? && !replace_blank
         end
         new_contents = new_contents + obj_contents
@@ -147,19 +132,17 @@ class VariableReplacement::Base
     # Check matches against built in variables
     matches&.each do |match|
       match = match.first
-      var = self.class.system_vars.find { |a| a[:name].casecmp(match) == 0 }
+      puts 'match================================================================='
+      puts match
+      puts match.split('|')[0]
+      var = self.class.system_vars.find { |a| a[:name].casecmp(match.split('|')[0]) == 0 }
       if var
+        puts 'found var'
         obj = eval(var[:obj])
-        if obj.nil?
-          value = ''
-        else
-          method_args = var[:args] || []
-          value = obj.send(var[:col_name], *method_args).to_s rescue ''
-          formatters = var[:formatters] || []
-          value = add_formatters(value, formatters)
-        end
-        value ||= ''
-        query = query.gsub(/{!#{var[:name]}}/i, value) unless value.blank? && !replace_blank
+        formatters = var[:formatters] || []
+        value = get_value(obj, var[:col_name], formatters)
+        puts "replace #{match} with #{value}"
+        query = query.gsub("{!#{match}}", value) unless value.blank? && !replace_blank
         query
       end
     end
@@ -167,9 +150,15 @@ class VariableReplacement::Base
     query
   end
 
-  def add_formatters(value, formatters)
+  def get_value(object, attribute_str, formatters = [])
+    arr = attribute_str.split('|')
+    attribute = arr[0]
+    if arr.length > 1
+      formatters = arr[1].split(',') + formatters
+    end
+    value = object.send(attribute).to_s rescue ''
     formatters.each do |format|
-      value = send(format, value)
+      value = send(format, value) rescue value
     end
     value
   end

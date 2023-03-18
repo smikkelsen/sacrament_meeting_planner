@@ -2,20 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Form from "react-bootstrap/Form";
-// import TaskDetail from './TaskDetail';
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-// import {formatDateString, csrfToken} from '../common/utils.js';
 
 class HymnTable extends React.Component {
 
     constructor(props) {
         super(props);
         this.handleHymnClick = this.handleHymnClick.bind(this);
-        // this.handleCompleteTaskClick = this.handleCompleteTaskClick.bind(this);
-        // this.handleSnoozeTaskClick = this.handleSnoozeTaskClick.bind(this);
         this.state = {
             showModal: false,
             // showCompleteTaskBtn: true,
@@ -65,15 +57,13 @@ class HymnTable extends React.Component {
                     <tr>
                         <th>Name</th>
                         <th>Page</th>
-                        <th>Category</th>
                     </tr>
                     </thead>
                     <tbody>
                     {this.state.hymns.map(hymn => (
                         <tr key={hymn.id} onClick={(e) => this.handleHymnClick(hymn, e)} >
                             <td>{hymn.name}</td>
-                            <td>{hymn.page}</td>
-                            <td>{hymn.category}</td>
+                            <td>#{hymn.page}</td>
                         </tr>
                     ))}
                     </tbody>

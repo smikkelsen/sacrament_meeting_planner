@@ -1,7 +1,10 @@
 #body-wrapper {
   #body-content {
     #templates-content {
-      background-color: white;
+
+      .tinymce-wrapper {
+        margin: 15px 0;
+      }
     }
   }
 }

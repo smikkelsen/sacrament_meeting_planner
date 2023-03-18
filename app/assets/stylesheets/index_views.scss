@@ -1,0 +1,21 @@
+#body-wrapper {
+  #body-content {
+    .index-page {
+      background-color: white;
+      padding: 35px 30px;
+
+      table {
+        thead {
+          font-size: 1.2em;
+        }
+        tr {
+          line-height: 1.8em;
+
+          td {
+            padding: 12px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -6,12 +6,14 @@ import Button from 'react-bootstrap/Button';
 import TemplateForm from './TemplateForm';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import {humanize} from '../common/utils.js';
+import {PencilSquare} from 'react-bootstrap-icons'
 
 class TemplateTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.handleTemplateClick = this.handleTemplateClick.bind(this);
+        this.handleTemplateEdit = this.handleTemplateEdit.bind(this);
         this.handleTemplateFormUpdate = this.handleTemplateFormUpdate.bind(this);
         this.handleCreateTemplate = this.handleCreateTemplate.bind(this);
         this.updateTemplateRow = this.updateTemplateRow.bind(this);
@@ -37,7 +39,7 @@ class TemplateTable extends React.Component {
         })
     }
 
-    handleTemplateClick(template, e) {
+    handleTemplateEdit(template, e) {
         this.setState({
             template: template
         })
@@ -65,13 +67,17 @@ class TemplateTable extends React.Component {
                     <tr>
                         <th>Name</th>
                         <th>Type</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {this.state.templates.map(template => (
-                        <tr key={template.id} onClick={(e) => this.handleTemplateClick(template, e)}>
+                        <tr key={template.id} >
                             <td>{template.name}</td>
-                            <td>{template.template_type}</td>
+                            <td>{humanize(template.template_type)}</td>
+                            <td>
+                                    <PencilSquare color={'primary'} size={'1.5em'} className={'clickable'} onClick={(e) => this.handleTemplateEdit(template, e)}/>
+                            </td>
                         </tr>
                     ))}
                     </tbody>

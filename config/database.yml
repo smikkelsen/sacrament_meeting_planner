@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: sacrament_meeting_planner_development
+
+test:
+  <<: *default
+  database: sacrament_meeting_planner_test
+
+production:
+  <<: *default
+  database: sacrament_meeting_planner_production
+  username: sacrament_meeting_planner
+  password: <%= ENV['SACRAMENT_MEETING_PLANNER_DATABASE_PASSWORD'] %>

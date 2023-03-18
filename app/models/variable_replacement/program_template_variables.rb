@@ -4,7 +4,7 @@ class VariableReplacement::ProgramTemplateVariables < VariableReplacement::Base
       { name: 'OpeningPrayer', display_name: 'Opening Prayer', col_name: 'opening_prayer', obj: 'program', group: 'Program' },
       { name: 'ClosingPrayer', display_name: 'Closing Prayer', col_name: 'closing_prayer', obj: 'program', group: 'Program' },
       { name: 'Notes', display_name: 'Notes', col_name: 'notes', obj: 'program', group: 'Program' },
-      { name: 'Date', display_name: 'Program Date', col_name: 'date', obj: 'program', group: 'Program', formatters: %w[format_date_as_day] },
+      { name: 'Date', display_name: 'Program Date', col_name: 'date', obj: 'program', group: 'Program' },
     ]
   end
 
