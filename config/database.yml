@@ -13,6 +13,7 @@ test:
 
 production:
   <<: *default
-  database: sacrament_meeting_planner_production
-  username: sacrament_meeting_planner
-  password: <%= ENV['SACRAMENT_MEETING_PLANNER_DATABASE_PASSWORD'] %>
+  host: <%=ENV.fetch('DB_HOST', 'localhost') %>
+  database: <%=ENV.fetch('DB_NAME', 'sacrament-meeting-planner-production') %>
+  username: <%=ENV['DB_USER'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
