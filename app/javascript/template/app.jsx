@@ -15,7 +15,6 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        console.log('template app mounted')
         fetchTemplates().then(
             (result) => {
                 console.log(result.templates)

@@ -10,7 +10,3 @@ User.create(first_name: 'Sarah', last_name: 'McConkie', email: 'sarah@test.com',
 User.create(first_name: 'Julie', last_name: 'Peterson', email: 'julie@test.com', role: :participant, organist: true)
 
 User.create(first_name: 'Josh', last_name: 'Orr', email: 'josh@test.com', role: :participant, chorister: true)
-
-# Program.generate(start_date: Date.today.beginning_of_year.strftime("%Y-%m-%d"))
-
-

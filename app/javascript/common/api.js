@@ -37,6 +37,14 @@ export const fetchTemplates = () => {
     )
 }
 
+export const fetchProgramTemplate = (programId, templateId) => {
+    return (
+        fetch(`/api/v1/programs/${programId}}/templates/${templateId}/generate`)
+            .then(res => res.json())
+    )
+}
+
+
 export const upsertTemplate = (payload) => {
     let url = "/api/v1/templates/"
     let method = "POST"

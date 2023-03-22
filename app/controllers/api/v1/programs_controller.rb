@@ -42,12 +42,7 @@ module Api
 
       def generate_template
         @template = Template.find(params[:template_id])
-          respond_to do |format|
-            format.html
-            format.pdf do
-              render pdf: "file_name"   # Excluding ".pdf" extension.
-            end
-          end
+        render json: { body: @program.template_replacement(@template.id).html_safe }.to_json
       end
 
       def update

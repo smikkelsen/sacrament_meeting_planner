@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       resources :hymns, only: [:index, :show]
       resources :templates, only: [:index, :show, :create, :update]
       resources :programs, only: [:index, :show, :update]
+      get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
       get '/users/current', to: 'users#current'
       resources :users, only: [:index, :show] 
     end

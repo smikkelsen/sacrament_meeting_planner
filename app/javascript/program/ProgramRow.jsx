@@ -10,6 +10,7 @@ import {isMeetingType} from './programHelpers.js';
 import {ChevronCompactDown, ChevronCompactUp} from 'react-bootstrap-icons';
 import ProgramItems from "./ProgramItems";
 import ProgramForm from "./ProgramForm";
+import TemplateForm from "./TemplateForm";
 
 const _ = require('lodash');
 
@@ -29,8 +30,10 @@ class ProgramRow extends React.Component {
         this.handleExpand = this.handleExpand.bind(this);
         this.handleCollapse = this.handleCollapse.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.handleTemplate = this.handleTemplate.bind(this);
         this.hasRole = this.hasRole.bind(this);
-        this.renderModal = this.renderModal.bind(this);
+        this.renderEditModal = this.renderEditModal.bind(this);
+        this.renderTemplateModal = this.renderTemplateModal.bind(this);
         this.renderProgramNotes = this.renderProgramNotes.bind(this);
         this.renderMeetingType = this.renderMeetingType.bind(this);
         this.renderHymn = this.renderHymn.bind(this);
@@ -44,6 +47,7 @@ class ProgramRow extends React.Component {
 
         this.state = {
             showEditModal: false,
+            showTemplateModal: false,
             expanded: false,
             program: this.props.program,
             dirty: false
@@ -52,6 +56,10 @@ class ProgramRow extends React.Component {
 
     handleEdit(_e) {
         this.setState({showEditModal: true})
+    }
+
+    handleTemplate(_e) {
+        this.setState({showTemplateModal: true})
     }
 
     handleExpand(_e) {
@@ -138,7 +146,7 @@ class ProgramRow extends React.Component {
             )
     }
 
-    renderModal() {
+    renderEditModal() {
         const {program} = this.state;
         return (
             <Modal
@@ -164,6 +172,31 @@ class ProgramRow extends React.Component {
                 </Modal.Body>
                 <Modal.Footer>
                     {this.renderFormSubmitButton()}
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+
+    renderTemplateModal() {
+        const {program} = this.state;
+        return (
+            <Modal
+                show={this.state.showTemplateModal}
+                onHide={() => this.setState({showTemplateModal: false})}
+                size="lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        Generate Template for {formatDateString(program.date, 'MMM do yyyy')}
+                        {this.renderMeetingType(program.meeting_type, ' - ')}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <TemplateForm
+                        program={this.state.program}
+                        currentUser={this.props.currentUser}/>
+                </Modal.Body>
+                <Modal.Footer>
                 </Modal.Footer>
             </Modal>
         )
@@ -350,13 +383,21 @@ class ProgramRow extends React.Component {
                     </Row>
                     <Row>
                         <Col sm={6} className={renderParentClickable}>
-                            <Button onClick={(e) => this.handleEdit(e)}>Edit</Button>
+                            <Button
+                                disabled={!this.hasRole('clerk')}
+                                onClick={(e) => this.handleTemplate(e)}
+                                className={'mr-2'}>
+                                Generate Template
+                            </Button>
+                            <Button onClick={(e) => this.handleEdit(e)}
+                                    className={'mr-2'}>Edit</Button>
                             {this.renderFormSubmitButton()}
                         </Col>
                         <Col sm={6} className={`${renderParentClickable} text-end`}>
                             {this.state.expanded ? <ChevronCompactUp/> : <ChevronCompactDown/>}
                         </Col>
-                        {this.renderModal()}
+                        {this.renderEditModal()}
+                        {this.renderTemplateModal()}
                     </Row>
                 </Card.Body>
             </Card>
