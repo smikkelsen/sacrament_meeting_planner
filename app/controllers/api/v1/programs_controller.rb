@@ -2,10 +2,9 @@ module Api
   module V1
     class ProgramsController < ApplicationController
       before_action :set_program, only: [:show, :update, :generate_template]
-      load_and_authorize_resource
 
       def index
-        @programs = Program.includes(:program_items)
+        @programs = Program.accessible_by(current_ability).includes(:program_items)
                            .eager_load(:presiding, :conducting, :prep, :chorister, :organist, :opening_hymn,
                                        :sacrament_hymn, :intermediate_hymn, :closing_hymn)
                            .order(date: :asc)
@@ -38,14 +37,18 @@ module Api
       end
 
       def show
+        authorize! :show, Program
       end
 
       def generate_template
-        @template = Template.find(params[:template_id])
+        authorize! :show, @program
+        authorize! :show, @template
+        @template = ::Template.find(params[:template_id])
         render json: { body: @program.template_replacement(@template.id).html_safe }.to_json
       end
 
       def update
+        authorize! :update, @program
         @program.update!(program_params)
         render :show
       end

@@ -2,13 +2,13 @@ module Api
   module V1
     class HymnsController < ApplicationController
       before_action :set_hymn, only: [:show]
-      load_and_authorize_resource
 
       def index
-        @hymns = Hymn.all
+        @hymns = Hymn.accessible_by(current_ability).all
       end
 
       def show
+        authorize! :show, Hymn
       end
 
       private
