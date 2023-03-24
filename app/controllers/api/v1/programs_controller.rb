@@ -37,7 +37,7 @@ module Api
       end
 
       def show
-        authorize! :show, Program
+        authorize! :show, @program
       end
 
       def generate_template

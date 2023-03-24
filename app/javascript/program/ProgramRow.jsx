@@ -7,10 +7,11 @@ import Card from 'react-bootstrap/Card'
 import Badge from 'react-bootstrap/Badge'
 import {formatDateString} from '../common/utils.js';
 import {isMeetingType} from './programHelpers.js';
-import {ChevronCompactDown, ChevronCompactUp} from 'react-bootstrap-icons';
+import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf} from 'react-bootstrap-icons';
 import ProgramItems from "./ProgramItems";
 import ProgramForm from "./ProgramForm";
 import TemplateForm from "./TemplateForm";
+import {csrfToken} from "../common/api";
 
 const _ = require('lodash');
 
@@ -64,9 +65,9 @@ class ProgramRow extends React.Component {
 
     handleExpand(_e) {
         if (this.state.expanded) {
-            if (event.target.classList.contains('collapsable')) {
-                this.setState({expanded: false})
-            }
+            // if (event.target.classList.contains('collapsable')) {
+            this.setState({expanded: false})
+            // }
         } else {
             this.setState({expanded: true})
         }
@@ -127,7 +128,8 @@ class ProgramRow extends React.Component {
             method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
             },
             body: JSON.stringify(params)
         })
@@ -239,14 +241,14 @@ class ProgramRow extends React.Component {
         return (
             !((program.chorister.id && program.organist.id && program.opening_hymn.id && program.sacrament_hymn.id && program.closing_hymn.id) ||
                 isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) ?
-                <Badge pill bg={'warning'}>Music Needed</Badge> : ''
+                <Badge pill bg={'warning'} className={'me-1'}>Music Needed</Badge> : ''
         )
     }
 
     renderPrayersNeeded(program) {
         return (
             !((program.opening_prayer && program.closing_prayer) || isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) ?
-                <Badge pill bg={'warning'}>Prayers Needed</Badge> : ''
+                <Badge pill bg={'warning'} className={'me-1'}>Prayers Needed</Badge> : ''
         )
     }
 
@@ -255,7 +257,7 @@ class ProgramRow extends React.Component {
             !(
                 (program.program_items.filter(i => ((i.item_type === 'speaker') && i.key)).length > 1) ||
                 isMeetingType(program.meeting_type, ['fast_sunday', 'stake_conference', 'general_conference'])) ?
-                <Badge pill bg="danger">Speakers Needed</Badge> : ''
+                <Badge pill bg="danger" className={'me-1'}>Speakers Needed</Badge> : ''
         )
     }
 
@@ -276,130 +278,160 @@ class ProgramRow extends React.Component {
 
     }
 
+    renderMusic(program) {
+        if (isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) {
+            return ''
+        } else {
+            let intermediateHymn = '';
+            if (program.intermediate_hymn.id) {
+                intermediateHymn = <div><span
+                    className={'item-label'}>Intermediate Hymn:</span> {this.renderHymn(program.intermediate_hymn)}</div>
+            }
+            return (
+                <Col sm={12}>
+                    <Card className={'music'}>
+                        <Card.Body>
+                            <Card.Title>Music</Card.Title>
+                            <div><span
+                                className={'item-label'}>Chorister:</span> {program.chorister.full_name}
+                            </div>
+                            <div><span
+                                className={'item-label'}>Organist:</span> {program.organist.full_name}
+                            </div>
+                            <div><span
+                                className={'item-label'}>Opening Hymn:</span> {this.renderHymn(program.opening_hymn)}
+                            </div>
+                            <div><span
+                                className={'item-label'}>Sacrament Hymn:</span> {this.renderHymn(program.sacrament_hymn)}
+                            </div>
+                            {intermediateHymn}
+                            <div><span
+                                className={'item-label'}>Closing Hymn:</span> {this.renderHymn(program.closing_hymn)}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            )
+        }
+    }
+
+    renderProgramAgenda(program) {
+        if (isMeetingType(this.state.program.meeting_type, ['fast_sunday']) ) {
+            return ''
+        } else {
+            return (
+                <ProgramItems cardTitle={'Program'} programItems={program.program_items}
+                              itemTypes={['speaker', 'musical_number', 'program_other']}/>
+            )
+        }
+    }
+
+    renderPrayers(program) {
+        if (isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) {
+            return ''
+        } else {
+            return (
+                <Col sm={12}>
+                    <Card className={'prayers'}>
+                        <Card.Body>
+                            <Card.Title>Prayers</Card.Title>
+                            <div><span
+                                className={'item-label'}>Opening:</span> {program.opening_prayer}
+                            </div>
+                            <div><span
+                                className={'item-label'}>Closing:</span> {program.closing_prayer}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            )
+        }
+    }
+
+    renderBusiness(program) {
+        if (isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) {
+            return ''
+        } else {
+            return (
+                <>
+                    <ProgramItems cardTitle={'Announcements'}
+                                  programItems={program.program_items}
+                                  itemTypes={['announcement']}/>
+                    <ProgramItems cardTitle={'Sustainings'} programItems={program.program_items}
+                                  itemTypes={['sustaining']}/>
+                    <ProgramItems cardTitle={'Releases'} programItems={program.program_items}
+                                  itemTypes={['release']}/>
+                </>
+            )
+        }
+    }
+
     render() {
         const {program} = this.state;
-        let renderParentClickable = `collapsable ${this.state.expanded ? 'parent-clickable' : ''}`;
-        let intermediateHymn = '';
-        if (program.intermediate_hymn.id) {
-            intermediateHymn = <div><span
-                className={'item-label'}>Intermediate Hymn:</span> {this.renderHymn(program.intermediate_hymn)}</div>
-        }
+        let renderParentClickable = ``;
         return (
             <Card id={this.state.program.is_next ? 'current-program' : ''} key={program.id}
-                  className={`program-row ${this.state.expanded ? 'expanded' : 'collapsed no-focus clickable'}`}
-                  onClick={(e) => this.handleExpand(e)}>
+                  className={`program-row ${this.state.expanded ? 'expanded' : 'collapsed no-focus'}`}
+            >
+                <Card.Header className={'collapsable clickable'}
+                             onClick={(e) => this.handleExpand(e)}>
+                    <div>
+                        <span className={'date me-2'}>
+                            {formatDateString(program.date, this.dateFormatStr())}
+                        </span>
+                        <span className={'meeting-type text-info  me-4 mb-1'}>
+                            {this.renderMeetingType(program.meeting_type)}
+                        </span>
+                        <Badge pill bg="secondary" className={'me-1 mb-1'}>
+                            <span><b>Prep:</b> {program.prep.first_name}</span>
+                        </Badge>
+                        <Badge pill bg="secondary" className={'me-2 mb-1'}>
+                            <span><b>Conduct:</b> {program.conducting.first_name}</span>
+                        </Badge>
+                        {this.renderSpeakersNeeded(program)}
+                        {this.renderPrayersNeeded(program)}
+                        {this.renderMusicNeeded(program)}
+                    </div>
+                    <div className={'abs-top-right text-end'}>
+                        {this.state.expanded ? <ChevronCompactUp/> : <ChevronCompactDown/>}
+                    </div>
+                </Card.Header>
                 <Card.Body>
-                    <Row className={renderParentClickable}>
-                        <Col md={3} className={renderParentClickable}>
-                            <Row>
-                                <Col sm={12}>
-                                    <div
-                                        className={'date col-sm-12 col-md-auto '}>{formatDateString(program.date, this.dateFormatStr())}</div>
-                                    <div className={'meeting-type text-info col-sm-12 col-md-auto'}>
-                                        {this.renderMeetingType(program.meeting_type)}
-                                    </div>
-                                </Col>
-                                <Col sm={12}>
-                                    <span
-                                        className={'sacrament-prep text-secondary'}>Prep: {program.prep.full_name}</span>
-                                </Col>
-                                <Col sm={12}>
-                                    <span
-                                        className={'conducting text-secondary'}>Conduct: {program.conducting.full_name}</span>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col sm={12}>
-                                    {this.renderSpeakersNeeded(program)}
-                                    {this.renderPrayersNeeded(program)}
-                                    {this.renderMusicNeeded(program)}
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col md={9} className={renderParentClickable}>
-                            <Row>
-                                <Col md={6} className={renderParentClickable}>
-                                    {isMeetingType(program.meeting_type, ['stake_conference', 'general_conference']) ? '' :
-                                        <>
-                                            {isMeetingType(this.state.program.meeting_type, ['fast_sunday']) ? '' :
-                                                <ProgramItems cardTitle={'Program'} programItems={program.program_items}
-                                                              itemTypes={['speaker', 'musical_number', 'program_other']}/>
-                                            }
-                                            <Col sm={12}>
-                                                <Card className={'prayers'}>
-                                                    <Card.Body>
-                                                        <Card.Title>Prayers</Card.Title>
-                                                        <div><span
-                                                            className={'item-label'}>Opening:</span> {program.opening_prayer}
-                                                        </div>
-                                                        <div><span
-                                                            className={'item-label'}>Closing:</span> {program.closing_prayer}
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
-                                            </Col>
-                                        </>
-                                    }
-                                    {this.renderProgramNotes(program.notes)}
-                                </Col>
-                                <Col md={6} className={renderParentClickable}>
-                                    {isMeetingType(program.meeting_type, ['stake_conference', 'general_conference']) ? '' :
-                                        <>
-                                            <Col sm={12}>
-                                                <Card className={'music'}>
-                                                    <Card.Body>
-                                                        <Card.Title>Music</Card.Title>
-                                                        <div><span
-                                                            className={'item-label'}>Chorister:</span> {program.chorister.full_name}
-                                                        </div>
-                                                        <div><span
-                                                            className={'item-label'}>Organist:</span> {program.organist.full_name}
-                                                        </div>
-                                                        <div><span
-                                                            className={'item-label'}>Opening Hymn:</span> {this.renderHymn(program.opening_hymn)}
-                                                        </div>
-                                                        <div><span
-                                                            className={'item-label'}>Sacrament Hymn:</span> {this.renderHymn(program.sacrament_hymn)}
-                                                        </div>
-                                                        {intermediateHymn}
-                                                        <div><span
-                                                            className={'item-label'}>Closing Hymn:</span> {this.renderHymn(program.closing_hymn)}
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
-                                            </Col>
-                                            <ProgramItems cardTitle={'Announcements'}
-                                                          programItems={program.program_items}
-                                                          itemTypes={['announcement']}/>
-                                            <ProgramItems cardTitle={'Sustainings'} programItems={program.program_items}
-                                                          itemTypes={['sustaining']}/>
-                                            <ProgramItems cardTitle={'Releases'} programItems={program.program_items}
-                                                          itemTypes={['release']}/>
-                                        </>
-                                    }
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
                     <Row>
-                        <Col sm={6} className={renderParentClickable}>
-                            <Button
-                                disabled={!this.hasRole('clerk')}
-                                onClick={(e) => this.handleTemplate(e)}
-                                className={'mr-2'}>
-                                Generate Template
-                            </Button>
-                            <Button onClick={(e) => this.handleEdit(e)}
-                                    className={'mr-2'}>Edit</Button>
-                            {this.renderFormSubmitButton()}
+                        <Col lg={6} md={12}>
+                            <Row>
+                                {this.renderPrayers(program)}
+                                {this.renderProgramAgenda(program)}
+                                {this.renderProgramNotes(program.notes)}
+                            </Row>
                         </Col>
-                        <Col sm={6} className={`${renderParentClickable} text-end`}>
-                            {this.state.expanded ? <ChevronCompactUp/> : <ChevronCompactDown/>}
+                        <Col lg={6} md={12}>
+                            <Row>
+                                {this.renderMusic(program)}
+                                {this.renderBusiness(program)}
+                            </Row>
                         </Col>
                         {this.renderEditModal()}
                         {this.renderTemplateModal()}
                     </Row>
                 </Card.Body>
+                <Card.Footer>
+                    <Col sm={12} className={renderParentClickable}>
+                        <Button onClick={(e) => this.handleEdit(e)}
+                                className={'mr-2'}>
+                            <Pencil className={'mr-2'}/>
+                            Edit
+                        </Button>
+                        {this.renderFormSubmitButton()}
+                        <Button
+                            disabled={!this.hasRole('clerk')}
+                            onClick={(e) => this.handleTemplate(e)}
+                            className={'mr-2'}>
+                            <FileEarmarkPdf className={'mr-2'}/>
+                            Generate Template
+                        </Button>
+                    </Col>
+                </Card.Footer>
             </Card>
         );
     }

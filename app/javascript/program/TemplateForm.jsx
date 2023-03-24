@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card'
 import {FloatingLabel} from "react-bootstrap";
 import {fetchTemplates} from "../common/api";
 import {fetchProgramTemplate} from "../common/api";
+import {FileEarmarkFontFill, FileEarmarkPdfFill} from 'react-bootstrap-icons';
 
 const _ = require('lodash');
 
@@ -120,13 +121,13 @@ class TemplateForm extends React.Component {
                     onClick={(e) => this.handleGenerateClick('html')}
                     className={'mr-2'}
                     variant={'outline-primary'}>
-                    Export Text
+                    <FileEarmarkFontFill className={'mr-2'}/> Text
                 </Button>
                 <Button
                     disabled={!this.state.templateId}
                     onClick={(e) => this.handleGenerateClick('pdf')}
                     variant={'outline-primary'}>
-                    Export PDF
+                    <FileEarmarkPdfFill className={'mr-2'} /> PDF
                 </Button>
                 {this.renderTemplateBody()}
             </Form>

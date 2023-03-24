@@ -35,11 +35,12 @@
         .program-row {
 
           margin-bottom: 1em;
-          padding-top: 1em;
+          border: #3d3d3d 1px solid;
 
           &.expanded, &:hover {
             opacity: 1;
             box-shadow: 0px 5px 10px 0px rgba(37, 37, 37, 0.5);
+            transform: translateY(-4px);
           }
 
           &.collapsed {
@@ -52,6 +53,10 @@
             }
           }
 
+          .card-body {
+            padding-top: 1em;
+          }
+
           .expand-wrapper {
             height: 0;
           }
@@ -61,7 +66,7 @@
           }
 
           .date {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: bold;
             padding-top: 5px;
             padding-bottom: 5px;

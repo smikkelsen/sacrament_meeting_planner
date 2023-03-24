@@ -1,3 +1,4 @@
+export const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 export const fetchPrograms = (params = {}) => {
     const url = new URL("/api/v1/programs", document.baseURI);
     Object.keys(params).forEach(function (key) {
