@@ -132,16 +132,11 @@ class VariableReplacement::Base
     # Check matches against built in variables
     matches&.each do |match|
       match = match.first
-      puts 'match================================================================='
-      puts match
-      puts match.split('|')[0]
       var = self.class.system_vars.find { |a| a[:name].casecmp(match.split('|')[0]) == 0 }
       if var
-        puts 'found var'
         obj = eval(var[:obj])
         formatters = var[:formatters] || []
         value = get_value(obj, var[:col_name], formatters)
-        puts "replace #{match} with #{value}"
         query = query.gsub("{!#{match}}", value) unless value.blank? && !replace_blank
         query
       end

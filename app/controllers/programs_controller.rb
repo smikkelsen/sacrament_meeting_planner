@@ -13,8 +13,13 @@ class ProgramsController < ApplicationController
                layout: false,
                template: "programs/generate_template",
                formats: [:html],
-               page_size: 'A4',
-               disposition: :inline
+               disposition: :inline  ,
+               page_size: @template.pdf_settings[:page_size] || 'Letter',
+               orientation: @template.pdf_settings[:orientation] || 'Portrait',
+               margin: { top:    @template.pdf_settings[:margin_top] || 0.5,
+                         bottom: @template.pdf_settings[:margin_bottom] || 0.5,
+                         left:   @template.pdf_settings[:margin_left] || 0.5,
+                         right:  @template.pdf_settings[:margin_right] || 0.5 }
       end
     end
   end

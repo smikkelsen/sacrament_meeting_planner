@@ -34,5 +34,6 @@ module SacramentMeetingPlanner
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    config.active_record.yaml_column_permitted_classes = [Symbol, HashWithIndifferentAccess]
   end
 end

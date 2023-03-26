@@ -53,10 +53,6 @@
             }
           }
 
-          .card-body {
-            padding-top: 1em;
-          }
-
           .expand-wrapper {
             height: 0;
           }
@@ -99,8 +95,17 @@
               background-color: #fffbee;
             }
 
+            .card-header {
+              .next-bookmark-icon {
+                color: $primary;
+                font-size: 1.5em;
+                margin-right: 2.25em;
+              }
+            }
+
             .card-body {
               line-height: 1.4em;
+              padding-top: 1em;
             }
           }
 

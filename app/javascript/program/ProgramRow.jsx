@@ -7,7 +7,7 @@ import Card from 'react-bootstrap/Card'
 import Badge from 'react-bootstrap/Badge'
 import {formatDateString} from '../common/utils.js';
 import {isMeetingType} from './programHelpers.js';
-import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf} from 'react-bootstrap-icons';
+import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf, BookmarkStarFill} from 'react-bootstrap-icons';
 import ProgramItems from "./ProgramItems";
 import ProgramForm from "./ProgramForm";
 import TemplateForm from "./TemplateForm";
@@ -49,7 +49,7 @@ class ProgramRow extends React.Component {
         this.state = {
             showEditModal: false,
             showTemplateModal: false,
-            expanded: false,
+            expanded: this.props.program.is_next,
             program: this.props.program,
             dirty: false
         };
@@ -376,6 +376,7 @@ class ProgramRow extends React.Component {
                 <Card.Header className={'collapsable clickable'}
                              onClick={(e) => this.handleExpand(e)}>
                     <div>
+                        {this.state.program.is_next ? <span className={'next-bookmark-icon'}><BookmarkStarFill /></span> : ''}
                         <span className={'date me-2'}>
                             {formatDateString(program.date, this.dateFormatStr())}
                         </span>
