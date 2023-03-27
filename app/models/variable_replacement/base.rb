@@ -136,7 +136,8 @@ class VariableReplacement::Base
       if var
         obj = eval(var[:obj])
         formatters = var[:formatters] || []
-        value = get_value(obj, var[:col_name], formatters)
+        attr = [var[:col_name]].concat(Array.wrap(match.split('|')[1])).join('|')
+        value = get_value(obj, attr, formatters)
         query = query.gsub("{!#{match}}", value) unless value.blank? && !replace_blank
         query
       end

@@ -22,6 +22,13 @@ module VariableReplacement
         ''
       end
 
+      def humanized_date(date)
+        if date.is_a? String
+          date = Date.parse(date)
+        end
+        date.strftime("%b #{date.day.ordinalize}, %Y")
+      end
+
       def time(time)
         if time.is_a? String
           time = Time.parse(time)

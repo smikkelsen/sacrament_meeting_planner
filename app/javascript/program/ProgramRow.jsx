@@ -285,7 +285,8 @@ class ProgramRow extends React.Component {
             let intermediateHymn = '';
             if (program.intermediate_hymn.id) {
                 intermediateHymn = <div><span
-                    className={'item-label'}>Intermediate Hymn:</span> {this.renderHymn(program.intermediate_hymn)}</div>
+                    className={'item-label'}>Intermediate Hymn:</span> {this.renderHymn(program.intermediate_hymn)}
+                </div>
             }
             return (
                 <Col sm={12}>
@@ -316,7 +317,7 @@ class ProgramRow extends React.Component {
     }
 
     renderProgramAgenda(program) {
-        if (isMeetingType(this.state.program.meeting_type, ['fast_sunday']) ) {
+        if (isMeetingType(this.state.program.meeting_type, ['fast_sunday'])) {
             return ''
         } else {
             return (
@@ -366,6 +367,26 @@ class ProgramRow extends React.Component {
         }
     }
 
+    renderPrep(program) {
+        if (program.prep) {
+            return(
+                <Badge pill bg="secondary" className={'me-1 mb-1'}>
+                    <span><b>Prep:</b> {program.prep.first_name}</span>
+                </Badge>
+            )
+        } else {return('')}
+    }
+
+    renderConduct(program) {
+        if (program.conduct) {
+            return(
+                <Badge pill bg="secondary" className={'me-2 mb-1'}>
+                    <span><b>Prep:</b> {program.conduct.first_name}</span>
+                </Badge>
+            )
+        } else {return('')}
+    }
+
     render() {
         const {program} = this.state;
         let renderParentClickable = ``;
@@ -376,19 +397,16 @@ class ProgramRow extends React.Component {
                 <Card.Header className={'collapsable clickable'}
                              onClick={(e) => this.handleExpand(e)}>
                     <div>
-                        {this.state.program.is_next ? <span className={'next-bookmark-icon'}><BookmarkStarFill /></span> : ''}
+                        {this.state.program.is_next ?
+                            <span className={'next-bookmark-icon'}><BookmarkStarFill/></span> : ''}
                         <span className={'date me-2'}>
                             {formatDateString(program.date, this.dateFormatStr())}
                         </span>
                         <span className={'meeting-type text-info  me-4 mb-1'}>
                             {this.renderMeetingType(program.meeting_type)}
                         </span>
-                        <Badge pill bg="secondary" className={'me-1 mb-1'}>
-                            <span><b>Prep:</b> {program.prep.first_name}</span>
-                        </Badge>
-                        <Badge pill bg="secondary" className={'me-2 mb-1'}>
-                            <span><b>Conduct:</b> {program.conducting.first_name}</span>
-                        </Badge>
+                        {this.renderPrep(program)}
+                        {this.renderConduct(program)}
                         {this.renderSpeakersNeeded(program)}
                         {this.renderPrayersNeeded(program)}
                         {this.renderMusicNeeded(program)}
