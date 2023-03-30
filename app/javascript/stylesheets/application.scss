@@ -27,17 +27,15 @@ a:hover {
   cursor: pointer;
 }
 
-.mr-1 {
-  margin-right: ($spacer * .25)
-}
-
-.mr-2 {
-  margin-right: ($spacer * .5)
-}
-
 .abs-top-right {
   position: absolute;
   top: 10px;
   right: 10px;
 }
 
+.modal:nth-of-type(even) {
+  z-index: 1062 !important;
+}
+.modal-backdrop.show:nth-of-type(even) {
+  z-index: 1061 !important;
+}

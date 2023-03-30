@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import {Trash3Fill} from 'react-bootstrap-icons';
 import {humanize} from '../common/utils.js';
+import Modal from "react-bootstrap/Modal";
 
 const _ = require('lodash');
 
@@ -33,8 +34,10 @@ class ProgramItemForm extends React.Component {
         this.renderSustaining = this.renderSustaining.bind(this);
         this.singleType = this.singleType.bind(this);
         this.renderNew = this.renderNew.bind(this);
+        this.renderTrelloModal = this.renderTrelloModal.bind(this);
         this.state = {
             programItems: this.props.programItems,
+            showTrelloModal: false
         };
     }
 
@@ -281,6 +284,32 @@ class ProgramItemForm extends React.Component {
         )
     }
 
+
+    handleTrelloImport() {
+        this.setState({showTrelloModal: true})
+    }
+
+    renderTrelloModal() {
+        return (
+            <Modal
+                show={this.state.showTrelloModal}
+                onHide={() => this.setState({showTrelloModal: false, listType: ''})}
+                size="xlg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        Import {this.props.addType} Cards
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+
+                </Modal.Body>
+                <Modal.Footer>
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+
     render() {
         let itemInputs = [];
         this.state.programItems.forEach((item, index) => {
@@ -321,8 +350,13 @@ class ProgramItemForm extends React.Component {
         return (
             <>
                 {itemInputs}
+                {this.renderTrelloModal()}
                 <Button onClick={(_e) => this.addProgramItemToForm()}
                         disabled={!this.hasRole('bishopric')}>Add</Button>
+                <Button onClick={(e) => this.handleTrelloImport()}
+                        className={'ms-2'}>
+                    Import
+                </Button>
             </>
         )
     }

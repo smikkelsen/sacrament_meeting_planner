@@ -23,10 +23,12 @@ class Ability
       can [:read, :update, :edit], ::Template
       can :manage, Template
       can [:read, :update, :edit], Hymn
+      can [:list_cards, :board_lists], Trello
     when 'bishop'
       can [:read, :update, :edit], Program
       can [:read, :update, :edit], Template
       can [:read, :update, :edit], Hymn
+      can [:list_cards, :board_lists], Trello
     when 'admin'
       can :manage, :all
     end

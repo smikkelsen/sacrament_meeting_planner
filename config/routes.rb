@@ -21,7 +21,9 @@ Rails.application.routes.draw do
       resources :programs, only: [:index, :show, :update]
       get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
       get '/users/current', to: 'users#current'
-      resources :users, only: [:index, :show] 
+      resources :users, only: [:index, :show]
+      get '/trello/list_cards/:list_type', to: 'trello#list_cards'
+
     end
   end
 

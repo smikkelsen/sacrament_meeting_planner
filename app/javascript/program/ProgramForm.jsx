@@ -3,10 +3,12 @@ import Button from 'react-bootstrap/Button';
 import Form from "react-bootstrap/Form";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import {findArrayElementByAttribute} from '../common/utils.js';
+import {findArrayElementByAttribute, formatDateString} from '../common/utils.js';
 import {isMeetingType} from './programHelpers.js';
 import {FloatingLabel} from "react-bootstrap";
 import ProgramItemForm from './ProgramItemForm';
+import Modal from "react-bootstrap/Modal";
+import TemplateForm from "./TemplateForm";
 
 const _ = require('lodash');
 
@@ -30,7 +32,7 @@ class ProgramForm extends React.Component {
         this.renderUserSelect = this.renderUserSelect.bind(this);
         this.renderHymnSelect = this.renderHymnSelect.bind(this);
         this.state = {
-            program: this.props.program,
+            program: this.props.program
         };
     }
 
