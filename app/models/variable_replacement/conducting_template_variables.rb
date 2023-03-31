@@ -1,7 +1,4 @@
 class VariableReplacement::ConductingTemplateVariables < VariableReplacement::Base
-  def self.system_vars
-    VariableReplacement::ProgramTemplateVariables.system_vars
-  end
 
   # +query+: the string with {!var_name} to replace
   def prep_query_string(query)

@@ -37,6 +37,14 @@
           margin-bottom: 1em;
           border: #3d3d3d 1px solid;
 
+          .card-header {
+            .next-bookmark-icon {
+              color: #e60dfd;
+              font-size: 1.5em;
+              margin-right: 0.5em;
+            }
+          }
+
           &.expanded, &:hover {
             opacity: 1;
             box-shadow: 0px 5px 10px 0px rgba(37, 37, 37, 0.5);
@@ -93,14 +101,6 @@
 
             &.prayers {
               background-color: #fffbee;
-            }
-
-            .card-header {
-              .next-bookmark-icon {
-                color: $primary;
-                font-size: 1.5em;
-                margin-right: 2.25em;
-              }
             }
 
             .card-body {

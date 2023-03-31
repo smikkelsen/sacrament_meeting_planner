@@ -17,13 +17,13 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :hymns, only: [:index, :show]
+      get '/templates/list_vars/:template_type', to: 'templates#list_vars'
       resources :templates, only: [:index, :show, :create, :update]
       resources :programs, only: [:index, :show, :update]
       get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
       get '/users/current', to: 'users#current'
       resources :users, only: [:index, :show]
       get '/trello/list_cards/:list_type', to: 'trello#list_cards'
-
     end
   end
 

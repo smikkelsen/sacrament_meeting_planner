@@ -66,3 +66,10 @@ export const upsertTemplate = (payload) => {
             .then(res => res.json())
     )
 }
+
+export const fetchTrelloListCards = (listType) => {
+    return (
+        fetch(`/api/v1/trello/list_cards/${listType}`)
+            .then(res => res.json())
+    )
+}

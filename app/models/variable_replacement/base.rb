@@ -3,7 +3,42 @@ class VariableReplacement::Base
   include VariableReplacement::Helpers::Formatters
 
   def self.system_vars
-    raise 'must be called by subclass'
+    [
+      { name: 'OpeningPrayer', display_name: 'Opening Prayer', col_name: 'opening_prayer', obj: 'program', group: 'Program' },
+      { name: 'ClosingPrayer', display_name: 'Closing Prayer', col_name: 'closing_prayer', obj: 'program', group: 'Program' },
+      { name: 'Notes', display_name: 'Notes', col_name: 'notes', obj: 'program', group: 'Program' },
+      { name: 'Date', display_name: 'Program Date', col_name: 'date', obj: 'program', group: 'Program' },
+    ]
+  end
+
+  def self.collection_objects
+    program_items_attributes = %w[id key value item_type]
+    vars = Array.new
+    vars << {display_name: 'All Program Items', obj: 'all_program_items', attributes: program_items_attributes }
+    vars << {display_name: 'Base Program Items', obj: 'program_items', attributes: program_items_attributes }
+    vars << {display_name: 'Speakers', obj: 'speakers', attributes: program_items_attributes }
+    vars << {display_name: 'Musical Numbers', obj: 'musical_numbers', attributes: program_items_attributes }
+    vars << {display_name: 'Program Others', obj: 'program_others', attributes: program_items_attributes }
+    vars << {display_name: 'Announcemetns', obj: 'announcements', attributes: program_items_attributes }
+    vars << {display_name: 'Releases', obj: 'releases', attributes: program_items_attributes }
+    vars << {display_name: 'Sustainings', obj: 'sustainings', attributes: program_items_attributes }
+    vars
+  end
+
+  def self.nested_objects
+    user_attributes = %w[id first_name last_name full_name email]
+    hymn_attributes = %w[id name page category]
+    vars = Array.new
+    vars << {display_name: 'Presiding', obj: 'presiding', attributes: user_attributes }
+    vars << {display_name: 'Conducting', obj: 'conducting', attributes: user_attributes }
+    vars << {display_name: 'Sacrament Prep', obj: 'prep', attributes: user_attributes }
+    vars << {display_name: 'Chorister', obj: 'chorister', attributes: user_attributes }
+    vars << {display_name: 'Organist', obj: 'organist', attributes: user_attributes }
+    vars << {display_name: 'Opening Hymn', obj: 'opening_hymn', attributes: hymn_attributes }
+    vars << {display_name: 'Sacrament Hymn', obj: 'sacrament_hymn', attributes: hymn_attributes }
+    vars << {display_name: 'Intermediate Hymn', obj: 'intermediate_hymn', attributes: hymn_attributes }
+    vars << {display_name: 'Closing Hymn', obj: 'closing_hymn', attributes: hymn_attributes }
+    vars
   end
 
   def initialize(args)
@@ -46,7 +81,7 @@ class VariableReplacement::Base
         attribute = match[1].to_s.downcase
 
         # Security Check (make sure they can only access data I say they can...)
-        perm = nested_objects.find { |a| a[:obj].casecmp(obj) == 0 }
+        perm = self.class.nested_objects.find { |a| a[:obj].casecmp(obj) == 0 }
         if perm && perm[:attributes].include?(attribute.split('|')[0])
 
           obj = eval(obj)
@@ -75,7 +110,7 @@ class VariableReplacement::Base
         attribute = match[2].to_s.downcase
 
         # Security Check (make sure they can only access data I say they can...)
-        perm = collection_objects.find { |a| a[:obj].casecmp(obj) == 0 }
+        perm = self.class.collection_objects.find { |a| a[:obj].casecmp(obj) == 0 }
         if perm && perm[:attributes].include?(attribute)
 
           obj = eval(obj)
@@ -102,7 +137,7 @@ class VariableReplacement::Base
       contents = match[1]
       new_contents = ''
       # Security Check (make sure they can only access data I say they can...)
-      perm = collection_objects.find { |a| a[:obj].casecmp(obj_name) == 0 }
+      perm = self.class.collection_objects.find { |a| a[:obj].casecmp(obj_name) == 0 }
       next unless perm
       objects = eval(obj_name)
       attribute_matches = contents.scan(/\{!(.+?)\}/) unless contents.nil?
@@ -157,34 +192,6 @@ class VariableReplacement::Base
       value = send(format, value) rescue value
     end
     value
-  end
-
-  def collection_objects
-    program_items_attributes = %w[id key value item_type]
-    vars = Array.new
-    vars << { obj: 'all_program_items', attributes: program_items_attributes }
-    vars << { obj: 'program_items', attributes: program_items_attributes }
-    vars << { obj: 'speakers', attributes: program_items_attributes }
-    vars << { obj: 'musical_numbers', attributes: program_items_attributes }
-    vars << { obj: 'program_others', attributes: program_items_attributes }
-    vars << { obj: 'announcements', attributes: program_items_attributes }
-    vars << { obj: 'releases', attributes: program_items_attributes }
-    vars << { obj: 'sustainings', attributes: program_items_attributes }
-  end
-
-  def nested_objects
-    user_attributes = %w[id first_name last_name full_name email]
-    hymn_attributes = %w[id name page category]
-    vars = Array.new
-    vars << { obj: 'presiding', attributes: user_attributes }
-    vars << { obj: 'conducting', attributes: user_attributes }
-    vars << { obj: 'prep', attributes: user_attributes }
-    vars << { obj: 'chorister', attributes: user_attributes }
-    vars << { obj: 'organist', attributes: user_attributes }
-    vars << { obj: 'opening_hymn', attributes: hymn_attributes }
-    vars << { obj: 'sacrament_hymn', attributes: hymn_attributes }
-    vars << { obj: 'intermediate_hymn', attributes: hymn_attributes }
-    vars << { obj: 'closing_hymn', attributes: hymn_attributes }
   end
 
 end

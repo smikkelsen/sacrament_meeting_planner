@@ -1,12 +1,9 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import {Trash3Fill} from 'react-bootstrap-icons';
-import {humanize} from '../common/utils.js';
+import {Spinner, Col, Row, InputGroup, Form, Button} from "react-bootstrap";
+import {Trash3Fill, CloudArrowDownFill} from 'react-bootstrap-icons';
+import {findArrayElementByAttribute, humanize} from '../common/utils.js';
 import Modal from "react-bootstrap/Modal";
+import {fetchTrelloListCards} from "../common/api";
 
 const _ = require('lodash');
 
@@ -23,21 +20,20 @@ class ProgramItemForm extends React.Component {
         super(props);
         this.handleProgramItemChange = this.handleProgramItemChange.bind(this);
         this.hasRole = this.hasRole.bind(this);
-        this.addProgramItemToForm = this.addProgramItemToForm.bind(this);
+        this.addProgramItemsToForm = this.addProgramItemsToForm.bind(this);
         this.removeProgramItemFromForm = this.removeProgramItemFromForm.bind(this);
         this.renderInputValue = this.renderInputValue.bind(this);
-        this.renderSpeaker = this.renderSpeaker.bind(this);
-        this.renderMusicalNumber = this.renderMusicalNumber.bind(this);
-        this.renderProgramOther = this.renderProgramOther.bind(this);
-        this.renderAnnouncement = this.renderAnnouncement.bind(this);
-        this.renderRelease = this.renderRelease.bind(this);
-        this.renderSustaining = this.renderSustaining.bind(this);
         this.singleType = this.singleType.bind(this);
         this.renderNew = this.renderNew.bind(this);
         this.renderTrelloModal = this.renderTrelloModal.bind(this);
+        this.hasTrelloImport = this.hasTrelloImport.bind(this);
+        this.renderTrelloImportButtonText = this.renderTrelloImportButtonText.bind(this);
         this.state = {
             programItems: this.props.programItems,
-            showTrelloModal: false
+            showTrelloModal: false,
+            importingTrello: false,
+            trelloItems: [],
+            trelloItemValues: []
         };
     }
 
@@ -58,13 +54,16 @@ class ProgramItemForm extends React.Component {
         }
     }
 
-    addProgramItemToForm() {
-        let newItems = this.state.programItems.concat({
-            id: -(Math.floor(Math.random() * 1000000000)),
-            item_type: this.props.addType,
-            key: '',
-            value: '',
-            program_id: this.props.programId
+    addProgramItemsToForm(items) {
+        let newItems = this.state.programItems
+        items.forEach((item) => {
+            newItems.push({
+                id: -(Math.floor(Math.random() * 1000000000)),
+                item_type: this.props.addType,
+                key: item.key,
+                value: item.value,
+                program_id: this.props.programId
+            })
         })
         this.props.handleToUpdate(newItems);
         this.setState({
@@ -95,46 +94,15 @@ class ProgramItemForm extends React.Component {
         return (this.props.itemTypes.length === 1);
     }
 
-    renderSpeaker(item, index) {
+    renderOneBox(item, index, heading, label) {
         return (
             <Row className={'input-row'} key={index}>
-                {this.singleType() ? '' : <h6>Speaker</h6>}
-                <Col md={6} sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            id={`programItems[${index}].key`}
-                            placeholder={'Speaker'}
-                            value={this.renderInputValue(item.id, 'key')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                    </InputGroup>
-                </Col>
-                <Col md={6} sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            placeholder={'Topic'}
-                            id={`programItems[${index}].value`}
-                            value={this.renderInputValue(item.id, 'value')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'value', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                        <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
-                                disabled={!this.hasRole('bishopric')}
-                                variant={'danger'}><Trash3Fill/></Button>
-                    </InputGroup>
-                </Col>
-            </Row>
-        )
-    }
-
-    renderMusicalNumber(item, index) {
-        return (
-            <Row className={'input-row'} key={index}>
-                {this.singleType() ? '' : <h6>Musical Number</h6>}
+                {this.singleType() ? '' : <h6>{heading}</h6>}
                 <Col sm={12}>
                     <InputGroup>
                         <Form.Control
                             id={`programItems[${index}].key`}
-                            placeholder={'Title'}
+                            placeholder={label}
                             value={this.renderInputValue(item.id, 'key')}
                             onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
                             disabled={!this.hasRole('bishopric')}/>
@@ -147,15 +115,15 @@ class ProgramItemForm extends React.Component {
         )
     }
 
-    renderProgramOther(item, index) {
+    renderTwoBox(item, index, heading, label1, label2) {
         return (
             <Row className={'input-row'} key={index}>
-                {this.singleType() ? '' : <h6>Other</h6>}
+                {this.singleType() ? '' : <h6>{heading}</h6>}
                 <Col md={6} sm={12}>
                     <InputGroup>
                         <Form.Control
                             id={`programItems[${index}].key`}
-                            placeholder={'Title'}
+                            placeholder={label1}
                             value={this.renderInputValue(item.id, 'key')}
                             onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
                             disabled={!this.hasRole('bishopric')}/>
@@ -164,90 +132,7 @@ class ProgramItemForm extends React.Component {
                 <Col md={6} sm={12}>
                     <InputGroup>
                         <Form.Control
-                            id={`programItems[${index}].value`}
-                            placeholder={'Value'}
-                            value={this.renderInputValue(item.id, 'value')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'value', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                        <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
-                                disabled={!this.hasRole('bishopric')}
-                                variant={'danger'}><Trash3Fill/></Button>
-                    </InputGroup>
-                </Col>
-            </Row>
-        )
-    }
-
-    renderAnnouncement(item, index) {
-        return (
-            <Row className={'input-row'} key={index}>
-                {this.singleType() ? '' : <h6>Announcement</h6>}
-                <Col sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            id={`programItems[${index}].key`}
-                            placeholder={'Title'}
-                            value={this.renderInputValue(item.id, 'key')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                        <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
-                                disabled={!this.hasRole('bishopric')}
-                                variant={'danger'}><Trash3Fill/></Button>
-                    </InputGroup>
-                </Col>
-            </Row>
-        )
-    }
-
-    renderRelease(item, index) {
-        return (
-            <Row className={'input-row'} key={index}>
-                {this.singleType() ? '' : <h6>Release</h6>}
-                <Col md={6} sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            id={`programItems[${index}].key`}
-                            placeholder={'Person'}
-                            value={this.renderInputValue(item.id, 'key')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                    </InputGroup>
-                </Col>
-                <Col md={6} sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            placeholder={'Calling'}
-                            id={`programItems[${index}].value`}
-                            value={this.renderInputValue(item.id, 'value')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'value', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                        <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
-                                disabled={!this.hasRole('bishopric')}
-                                variant={'danger'}><Trash3Fill/></Button>
-                    </InputGroup>
-                </Col>
-            </Row>
-        )
-    }
-
-    renderSustaining(item, index) {
-        return (
-            <Row className={'input-row'} key={index}>
-                {this.singleType() ? '' : <h6>Sustaining</h6>}
-                <Col md={6} sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            id={`programItems[${index}].key`}
-                            placeholder={'Person'}
-                            value={this.renderInputValue(item.id, 'key')}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
-                    </InputGroup>
-                </Col>
-                <Col md={6} sm={12}>
-                    <InputGroup>
-                        <Form.Control
-                            placeholder={'Calling'}
+                            placeholder={label2}
                             id={`programItems[${index}].value`}
                             value={this.renderInputValue(item.id, 'value')}
                             onChange={(e) => this.handleProgramItemChange(item.id, 'value', e.target.value)}
@@ -284,9 +169,60 @@ class ProgramItemForm extends React.Component {
         )
     }
 
+    hasTrelloImport() {
+        return (['sustaining', 'release'].includes(this.props.addType))
+    }
 
     handleTrelloImport() {
-        this.setState({showTrelloModal: true})
+        if (this.hasTrelloImport()) {
+            this.setState({importingTrello: true},
+                function () {
+                    fetchTrelloListCards(this.props.addType).then(
+                        (result) => {
+                            let trelloItemValues = result.cards.map((item) => (
+                                {id: item.id, name: item.name, checked: true}
+                            ))
+                            this.setState({
+                                showTrelloModal: true, importingTrello: false, trelloItems: result.cards,
+                                trelloItemValues: trelloItemValues
+                            })
+                        },
+                        (error) => {
+                            console.log('error fetching trello cards')
+                            console.log(error)
+                            this.setState({
+                                error: error
+                            });
+                        }
+                    )
+                }
+            )
+        }
+    }
+
+    handleAddFromTrello() {
+        let newItems = []
+        this.state.trelloItemValues.forEach((item, index) => {
+            if (item.checked) {
+                let arr = item.name.split(/ \(release\) | \(call\) | \(sustain\) | - +/i)
+                newItems.push({key: arr[0], value: arr[1]})
+            }
+        })
+        this.setState({showTrelloModal: false}, () => {
+            if (newItems.length > 0) {
+                this.addProgramItemsToForm(newItems)
+            }
+        })
+    }
+
+    handleTrelloItemChecked(itemId, value) {
+        let newItems = this.state.trelloItemValues.map(item => (
+            item.id === itemId ? Object.assign({}, item, {checked: value}) : item));
+        this.setState({trelloItemValues: newItems})
+    }
+
+    renderTrelloItemChecked(itemId) {
+        return (findArrayElementByAttribute(this.state.trelloItemValues, itemId).checked)
     }
 
     renderTrelloModal() {
@@ -294,20 +230,65 @@ class ProgramItemForm extends React.Component {
             <Modal
                 show={this.state.showTrelloModal}
                 onHide={() => this.setState({showTrelloModal: false, listType: ''})}
-                size="xlg"
+                className={'top-modal'}
+                dialogClassName={'dialog-top-modal'}
+                backdropClassName={'top-modal-backdrop'}
+                size="md"
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Import {this.props.addType} Cards
+                        Import {humanize(this.props.addType)} Cards
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <Form>
 
+                        {this.state.trelloItems.map((item, index) => (
+                            <Form.Check
+                                checked={this.renderTrelloItemChecked(item.id)}
+                                onChange={(e) => this.handleTrelloItemChecked(item.id, e.target.checked)}
+                                key={index}
+                                type={'checkbox'}
+                                label={item.name}
+                                id={item.id}
+                            />
+                        ))}
+                    </Form>
                 </Modal.Body>
                 <Modal.Footer>
+                    <Button className={'me-2'} onClick={(_e) => this.handleAddFromTrello()}>Add Selected</Button>
+                    <Button variant={'secondary'}
+                            onClick={() => this.setState({showTrelloModal: false, listType: ''})}>
+                        Cancel
+                    </Button>
                 </Modal.Footer>
             </Modal>
         )
+    }
+
+    renderTrelloImportButtonText() {
+        if (this.state.importingTrello) {
+            return (
+                <>
+                    <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        className={'me-2'}
+                        role="status"
+                        aria-hidden="true"
+                    />
+                    Loading...
+                </>
+            )
+        } else {
+            return (
+                <>
+                    <CloudArrowDownFill className={'me-2'}/>
+                    Import From Trello
+                </>
+            )
+        }
     }
 
     render() {
@@ -322,22 +303,22 @@ class ProgramItemForm extends React.Component {
 
             switch (item.item_type) {
                 case 'speaker':
-                    itemInputs.push(this.renderSpeaker(item, index));
+                    itemInputs.push(this.renderTwoBox(item, index, 'Speaker', 'Speaker', 'Topic'));
                     break;
                 case 'musical_number':
-                    itemInputs.push(this.renderMusicalNumber(item, index));
+                    itemInputs.push(this.renderOneBox(item, index, 'Musical Number', 'Title'));
                     break;
                 case 'program_other':
-                    itemInputs.push(this.renderProgramOther(item, index));
+                    itemInputs.push(this.renderTwoBox(item, index, 'Other', 'Title', 'Value'));
                     break;
                 case 'announcement':
-                    itemInputs.push(this.renderAnnouncement(item, index));
+                    itemInputs.push(this.renderOneBox(item, index, 'Announcement', 'Title'));
                     break;
                 case 'release':
-                    itemInputs.push(this.renderRelease(item, index));
+                    itemInputs.push(this.renderTwoBox(item, index, 'Release', 'Person', 'Calling'));
                     break;
                 case 'sustaining':
-                    itemInputs.push(this.renderSustaining(item, index));
+                    itemInputs.push(this.renderTwoBox(item, index, 'Sustaining', 'Person', 'Calling'));
                     break;
                 case 'program_new':
                 case 'announcement_new':
@@ -350,13 +331,18 @@ class ProgramItemForm extends React.Component {
         return (
             <>
                 {itemInputs}
-                {this.renderTrelloModal()}
-                <Button onClick={(_e) => this.addProgramItemToForm()}
+
+                <Button onClick={(_e) => this.addProgramItemsToForm([{key: '', value: ''}])}
                         disabled={!this.hasRole('bishopric')}>Add</Button>
-                <Button onClick={(e) => this.handleTrelloImport()}
-                        className={'ms-2'}>
-                    Import
-                </Button>
+                {this.hasTrelloImport() ?
+                    <>
+                        <Button disabled={this.state.importingTrello} onClick={(e) => this.handleTrelloImport()}
+                                className={'ms-2'}>
+                            {this.renderTrelloImportButtonText()}
+                        </Button>
+                        {this.renderTrelloModal()}
+                    </> : ''}
+
             </>
         )
     }

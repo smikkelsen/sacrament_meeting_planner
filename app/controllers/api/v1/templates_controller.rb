@@ -16,7 +16,7 @@ module Api
         if @template.save
           render :show
         else
-          render json: {error: @template.errors.full_messages}.to_json
+          render json: { error: @template.errors.full_messages }.to_json
         end
       end
 
@@ -24,8 +24,26 @@ module Api
         if @template.update(template_params)
           render :show
         else
-          render json: {error: @template.errors.full_messages}.to_json
+          render json: { error: @template.errors.full_messages }.to_json
         end
+      end
+
+      def list_vars
+        klass = case params[:template_type]
+                when 'conducting'
+                  VariableReplacement::ConductingTemplateVariables
+                when 'program'
+                  VariableReplacement::ConductingTemplateVariables
+                end
+        system_vars = klass.system_vars.map { |a| { group: a[:group], name: a[:display_name], value: "{!#{a[:name]}}" } }
+                           .group_by { |h| h[:group] }
+        nested_object_vars = klass.nested_objects.map { |a| a[:attributes].map { |b| { group: a[:obj], name: b.humanize, value: "{!#{a[:obj]}[#{b}]}" } } }.flatten.group_by { |h| h[:group] }
+        collection_objects = klass.collection_objects.map { |a| { group: a[:obj], name: a[:display_name], value: "{!!#{a[:obj]}}\n{!!end}" } }
+                                  .group_by { |h| h[:group] }
+        collection_variables = klass.collection_objects.map { |a| a[:attributes].map { |b| { group: a[:obj], name: b.humanize, value: "{!#{b}}" } } }.flatten
+                                    .group_by { |h| h[:group] }
+        render json: {system_vars: system_vars, nested_object_vars: nested_object_vars, collection_objects: collection_objects, collection_variables: collection_variables}.to_json
+
       end
 
       private

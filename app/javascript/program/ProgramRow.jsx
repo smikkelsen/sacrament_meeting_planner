@@ -437,16 +437,16 @@ class ProgramRow extends React.Component {
                 <Card.Footer>
                     <Col sm={12} className={renderParentClickable}>
                         <Button onClick={(e) => this.handleEdit(e)}
-                                className={'mr-2'}>
-                            <Pencil className={'mr-2'}/>
+                                className={'me-2'}>
+                            <Pencil className={'me-2'}/>
                             Edit
                         </Button>
                         {this.renderFormSubmitButton()}
                         <Button
                             disabled={!this.hasRole('clerk')}
                             onClick={(e) => this.handleTemplate(e)}
-                            className={'mr-2'}>
-                            <FileEarmarkPdf className={'mr-2'}/>
+                            className={'me-2'}>
+                            <FileEarmarkPdf className={'me-2'}/>
                             Generate Template
                         </Button>
                     </Col>
