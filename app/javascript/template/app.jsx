@@ -17,7 +17,6 @@ class App extends React.Component {
     componentDidMount() {
         fetchTemplates().then(
             (result) => {
-                console.log(result.templates)
                 this.setState({
                     templates: result.templates,
                     isLoaded: true

@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import {Button, Table} from 'react-bootstrap';
 import TemplateForm from './TemplateForm';
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import {humanize} from '../common/utils.js';
 import {PencilSquare} from 'react-bootstrap-icons'
 

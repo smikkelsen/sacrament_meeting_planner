@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
+import {Table, Modal} from 'react-bootstrap';
 
 class HymnTable extends React.Component {
 

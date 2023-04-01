@@ -1,7 +1,5 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from "react-bootstrap/Form";
-import Card from 'react-bootstrap/Card'
+import {Button, Form, Card} from 'react-bootstrap';
 import {FloatingLabel} from "react-bootstrap";
 import {fetchTemplates} from "../common/api";
 import {fetchProgramTemplate} from "../common/api";

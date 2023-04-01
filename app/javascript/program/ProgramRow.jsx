@@ -1,10 +1,5 @@
 import React from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Badge from 'react-bootstrap/Badge'
+import {Modal, Button, Row, Col, Card, Badge} from 'react-bootstrap';
 import {formatDateString} from '../common/utils.js';
 import {isMeetingType} from './programHelpers.js';
 import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf, BookmarkStarFill} from 'react-bootstrap-icons';

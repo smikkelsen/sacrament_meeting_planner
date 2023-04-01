@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from 'react-bootstrap/Button';
+import {Button, Modal, Form, Row, Col} from 'react-bootstrap';
 import ProgramRow from './ProgramRow'
 import {FilterCircle} from 'react-bootstrap-icons';
-import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
 import {fetchPrograms} from "../common/api";
@@ -84,18 +80,15 @@ class ProgramRows extends React.Component {
         let date = null
         if (direction === 'top') {
             date = this.state.programs.sort((a, b) => a.date - b.date)[0].date;
-            console.log(date);
             params['end_date'] = date
         } else {
             date = this.state.programs.sort((a, b) => a.date - b.date).at(-1).date;
-            console.log(date);
             params['start_date'] = date
 
         }
 
         fetchPrograms(params).then(
             (result) => {
-                console.log(result)
                 let newPrograms = result.programs.sort((a, b) => a.date - b.date);
                 let loadMore = (newPrograms.length > 0);
                 if (direction === 'top') {

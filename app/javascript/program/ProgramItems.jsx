@@ -1,6 +1,5 @@
 import React from 'react';
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
+import {Col, Card} from "react-bootstrap";
 
 class ProgramItems extends React.Component {
 

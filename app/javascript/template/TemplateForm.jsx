@@ -1,22 +1,9 @@
 import React from 'react';
-import {useRef} from 'react';
-import PropTypes from 'prop-types';
-import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Form from "react-bootstrap/Form";
-// import TaskDetail from './TaskDetail';
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
+import {Card, Button, Form, Row, Col} from 'react-bootstrap'
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
 import {Editor} from '@tinymce/tinymce-react';
 import {fetchTemplateVars, upsertTemplate} from "../common/api";
-
-// const editorRef = useRef(null);
-
-// import {formatDateString, csrfToken} from '../common/utils.js';
 
 class TemplateForm extends React.Component {
 

@@ -1,8 +1,7 @@
 import React from 'react';
-import {Spinner, Col, Row, InputGroup, Form, Button} from "react-bootstrap";
+import {Spinner, Col, Row, InputGroup, Form, Button, Modal} from "react-bootstrap";
 import {Trash3Fill, CloudArrowDownFill} from 'react-bootstrap-icons';
 import {findArrayElementByAttribute, humanize} from '../common/utils.js';
-import Modal from "react-bootstrap/Modal";
 import {fetchTrelloListCards} from "../common/api";
 
 const _ = require('lodash');

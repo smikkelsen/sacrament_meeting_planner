@@ -1,18 +1,12 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from "react-bootstrap/Form";
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import {findArrayElementByAttribute, formatDateString} from '../common/utils.js';
+import {Form, Row, Col} from "react-bootstrap";
+import {findArrayElementByAttribute} from '../common/utils.js';
 import {isMeetingType} from './programHelpers.js';
 import {FloatingLabel} from "react-bootstrap";
 import ProgramItemForm from './ProgramItemForm';
-import Modal from "react-bootstrap/Modal";
-import TemplateForm from "./TemplateForm";
 
 const _ = require('lodash');
 
-// import {formatDateString, csrfToken} from '../common/utils.js';
 const USER_ROLES = {
     admin: ['admin'],
     bishopric: ['bishopric', 'bishop', 'admin'],
