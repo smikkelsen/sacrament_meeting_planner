@@ -73,3 +73,11 @@ export const fetchTrelloListCards = (listType) => {
             .then(res => res.json())
     )
 }
+
+
+export const fetchTemplateVars = (templateType) => {
+    return (
+        fetch(`/api/v1/templates/list_vars/${templateType}`)
+            .then(res => res.json())
+    )
+}

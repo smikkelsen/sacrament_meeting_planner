@@ -33,16 +33,21 @@ module Api
                 when 'conducting'
                   VariableReplacement::ConductingTemplateVariables
                 when 'program'
-                  VariableReplacement::ConductingTemplateVariables
+                  VariableReplacement::ProgramTemplateVariables
                 end
         system_vars = klass.system_vars.map { |a| { group: a[:group], name: a[:display_name], value: "{!#{a[:name]}}" } }
                            .group_by { |h| h[:group] }
-        nested_object_vars = klass.nested_objects.map { |a| a[:attributes].map { |b| { group: a[:obj], name: b.humanize, value: "{!#{a[:obj]}[#{b}]}" } } }.flatten.group_by { |h| h[:group] }
-        collection_objects = klass.collection_objects.map { |a| { group: a[:obj], name: a[:display_name], value: "{!!#{a[:obj]}}\n{!!end}" } }
-                                  .group_by { |h| h[:group] }
-        collection_variables = klass.collection_objects.map { |a| a[:attributes].map { |b| { group: a[:obj], name: b.humanize, value: "{!#{b}}" } } }.flatten
-                                    .group_by { |h| h[:group] }
-        render json: {system_vars: system_vars, nested_object_vars: nested_object_vars, collection_objects: collection_objects, collection_variables: collection_variables}.to_json
+        nested_object_vars = klass.nested_objects.map { |a| a[:attributes].map { |b| { group: a[:display_name], name: b.humanize, value: "{!#{a[:obj]}[#{b}]}" } } }.flatten.group_by { |h| h[:group] }
+        collection_objects = klass.collection_objects.map { |a| { name: a[:display_name], value: "{!!#{a[:obj]}}<br><br>{!!end}" } }
+        collection_vars = klass.collection_objects.map { |a| a[:attributes].map { |b| { group: a[:display_name], name: b.humanize, value: "{!#{b}}" } } }.flatten
+                               .group_by { |h| h[:group] }
+        other_vars = {
+          "Other" => [{ name: "If Present", value: "{!!if_present}<br><br>{!!end_if_present}" }],
+          "Formatters" => %w(day mm_dd_y humanized_date time date_time humanize capitalize downcase underscore upcase).map {|f| {name: f, value: f}}
+        }
+        render json: { system_vars: system_vars, nested_object_vars: nested_object_vars,
+                       collection_objects: { "Collection Wrappers" => collection_objects },
+                       collection_vars: collection_vars, other_vars: other_vars }.to_json
 
       end
 

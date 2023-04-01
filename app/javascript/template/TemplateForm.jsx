@@ -12,7 +12,7 @@ import Card from 'react-bootstrap/Card'
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
 import {Editor} from '@tinymce/tinymce-react';
-import {upsertTemplate} from "../common/api";
+import {fetchTemplateVars, upsertTemplate} from "../common/api";
 
 // const editorRef = useRef(null);
 
@@ -29,14 +29,37 @@ class TemplateForm extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleDirty = this.handleDirty.bind(this);
         this.renderEditor = this.renderEditor.bind(this);
+        this.getTemplateVars = this.getTemplateVars.bind(this);
 
         this.editorRef = React.createRef(null);
         this.state = {
             dirty: false,
-            template: this.props.template
+            template: this.props.template,
+            templateVars: {}
         };
     }
 
+    componentDidMount() {
+        this.getTemplateVars();
+    }
+
+    getTemplateVars() {
+        if (this.state.template.template_type) {
+            fetchTemplateVars(this.state.template.template_type).then(
+                (result) => {
+                    this.setState({
+                        templateVars: result,
+                    });
+                },
+                (error) => {
+                    console.log('failed to load template vars');
+                    this.setState({
+                        error: error
+                    });
+                }
+            );
+        }
+    }
 
     handleSave() {
         let payload = this.state.template
@@ -69,6 +92,10 @@ class TemplateForm extends React.Component {
     handleInputChange(e) {
         this.setState(prevState => {
             return {dirty: true, template: {...prevState.template, [e.target.id]: e.target.value}}
+        }, () => {
+            if (e.target.id === 'template_type') {
+                this.getTemplateVars()
+            }
         })
     }
 
@@ -95,7 +122,72 @@ class TemplateForm extends React.Component {
         }
     }
 
+    menuItemsFromVars(vars, editor) {
+        let items = []
+        for (const [key, value] of Object.entries(vars)) {
+            items.push({
+                type: "nestedmenuitem",
+                text: key,
+                getSubmenuItems: function () {
+                    return (
+                        value.map((i) => {
+                            return {
+                                type: 'menuitem',
+                                text: i.name,
+                                onAction: function () {
+                                    editor.insertContent(i.value);
+                                }
+                            }
+                        })
+                    )
+                }
+            })
+        }
+        return (items);
+    }
+
+    buildCustomEditorButtons(editor) {
+        let _this = this
+        let items = []
+        if (!this.state.template.template_type) {
+            items.push({
+                type: 'menuitem',
+                text: 'No Template Type Selected!',
+                icon: 'warning',
+                onAction: function () {
+                    editor.insertContent('Please select a Template Type before trying to use Template Variables!');
+                }
+            })
+            return (items)
+        }
+        items = items.concat(this.menuItemsFromVars(this.state.templateVars.system_vars, editor))
+        items.push({
+            type: "nestedmenuitem",
+            text: 'People/Music',
+            getSubmenuItems:
+                function () {
+                    return (
+                        _this.menuItemsFromVars(_this.state.templateVars.nested_object_vars, editor)
+                    )
+                }
+        })
+        items = items.concat(this.menuItemsFromVars(this.state.templateVars.collection_objects, editor))
+        items.push({
+            type: "nestedmenuitem",
+            text: 'Collection Attributes',
+            getSubmenuItems:
+                function () {
+                    return (
+                        _this.menuItemsFromVars(_this.state.templateVars.collection_vars, editor)
+                    )
+                }
+        })
+        items = items.concat(this.menuItemsFromVars(this.state.templateVars.other_vars, editor))
+        return (items);
+    }
+
     renderEditor() {
+        let _this = this
         return (
             <Editor
                 apiKey='jd31kzsrcz9m10ec8zphid3sicr70zflgld4iv3ps3q6bl5w'
@@ -123,41 +215,7 @@ class TemplateForm extends React.Component {
                         editor.ui.registry.addMenuButton('insertvarbutton', {
                             text: 'Insert Variable',
                             fetch: function (callback) {
-                                let test = []
-                                let items = [
-                                    {
-                                        type: 'menuitem',
-                                        text: 'Menu item 1',
-                                        onAction: function () {
-                                            editor.insertContent('&nbsp;<em>You clicked menu item 1!</em>');
-                                        }
-                                    },
-                                    {
-                                        type: 'nestedmenuitem',
-                                        text: 'Menu item 2',
-                                        icon: 'user',
-                                        getSubmenuItems: function () {
-                                            return [
-                                                {
-                                                    type: 'menuitem',
-                                                    text: 'Sub menu item 1',
-                                                    icon: 'unlock',
-                                                    onAction: function () {
-                                                        editor.insertContent('&nbsp;<em>You clicked Sub menu item 1!</em>');
-                                                    }
-                                                },
-                                                {
-                                                    type: 'menuitem',
-                                                    text: 'Sub menu item 2',
-                                                    icon: 'lock',
-                                                    onAction: function () {
-                                                        editor.insertContent('&nbsp;<em>You clicked Sub menu item 2!</em>');
-                                                    }
-                                                }
-                                            ];
-                                        }
-                                    }
-                                ];
+                                let items = _this.buildCustomEditorButtons(editor);
                                 callback(items);
                             }
                         });
@@ -282,7 +340,7 @@ class TemplateForm extends React.Component {
                 <Col sm={12}>
                     <Button variant={'success'}
                             disabled={!this.state.dirty}
-                            className={'mr-2'}
+                            className={'me-2'}
                             onClick={(_e) => this.handleSave()}>
                         Save
                     </Button>

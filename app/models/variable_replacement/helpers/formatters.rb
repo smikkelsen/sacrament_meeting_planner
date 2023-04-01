@@ -17,7 +17,7 @@ module VariableReplacement
         if date.is_a? String
           date = Date.parse(date)
         end
-        date.strftime("%m-d-Y")
+        date.strftime("%m-d-y")
       rescue
         ''
       end

@@ -119,15 +119,15 @@ class TemplateForm extends React.Component {
                 <Button
                     disabled={!this.state.templateId}
                     onClick={(e) => this.handleGenerateClick('html')}
-                    className={'mr-2'}
+                    className={'me-2'}
                     variant={'outline-primary'}>
-                    <FileEarmarkFontFill className={'mr-2'}/> Text
+                    <FileEarmarkFontFill className={'me-2'}/> Text
                 </Button>
                 <Button
                     disabled={!this.state.templateId}
                     onClick={(e) => this.handleGenerateClick('pdf')}
                     variant={'outline-primary'}>
-                    <FileEarmarkPdfFill className={'mr-2'} /> PDF
+                    <FileEarmarkPdfFill className={'me-2'} /> PDF
                 </Button>
                 {this.renderTemplateBody()}
             </Form>
