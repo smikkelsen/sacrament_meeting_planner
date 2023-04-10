@@ -107,6 +107,10 @@ GEM
       oauth2 (>= 1.4.0)
       rails (>= 5.2.0)
     hashie (5.0.0)
+    htmltoword (1.1.1)
+      actionpack
+      nokogiri
+      rubyzip (>= 1.0)
     http-accept (1.7.0)
     http-cookie (1.0.5)
       domain_name (~> 0.5)
@@ -220,6 +224,7 @@ GEM
       oauth (>= 0.4.5)
       rest-client (>= 1.8.0)
     ruby2_keywords (0.0.5)
+    rubyzip (2.3.2)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
@@ -283,6 +288,7 @@ DEPENDENCIES
   cancancan
   google-id-token
   google_sign_in
+  htmltoword
   jbuilder (~> 2.7)
   listen (~> 3.3)
   oauth2 (= 1.4.7)

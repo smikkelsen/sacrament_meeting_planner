@@ -8,18 +8,21 @@ class ProgramsController < ApplicationController
       format.html do
         render 'programs/generate_template', layout: false
       end
+      format.docx do
+        render docx: "programs/generate_template", filename: 'my_file.docx'
+      end
       format.pdf do
         render pdf: "#{@template.name} - #{@program.date.strftime('%Y-%m-%d')}",
                layout: false,
                template: "programs/generate_template",
                formats: [:html],
-               disposition: :inline  ,
+               disposition: :inline,
                page_size: @template.pdf_settings[:page_size] || 'Letter',
                orientation: @template.pdf_settings[:orientation] || 'Portrait',
-               margin: { top:    @template.pdf_settings[:margin_top] || 0.5,
+               margin: { top: @template.pdf_settings[:margin_top] || 0.5,
                          bottom: @template.pdf_settings[:margin_bottom] || 0.5,
-                         left:   @template.pdf_settings[:margin_left] || 0.5,
-                         right:  @template.pdf_settings[:margin_right] || 0.5 }
+                         left: @template.pdf_settings[:margin_left] || 0.5,
+                         right: @template.pdf_settings[:margin_right] || 0.5 }
       end
     end
   end

@@ -2,9 +2,7 @@ class CreateHymnsJob < ApplicationJob
 
   def perform
     hymns.each do |hymn|
-      h=Hymn.where(category: 1, name: hymn[0]).first_or_initialize
-      h.page = hymn[1]
-      h.save!
+      Hymn.where(category: 1, name: hymn[0], page: hymn[1]).first_or_create!
     end
   end
 

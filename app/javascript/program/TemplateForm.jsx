@@ -3,7 +3,7 @@ import {Button, Form, Card} from 'react-bootstrap';
 import {FloatingLabel} from "react-bootstrap";
 import {fetchTemplates} from "../common/api";
 import {fetchProgramTemplate} from "../common/api";
-import {FileEarmarkFontFill, FileEarmarkPdfFill} from 'react-bootstrap-icons';
+import {FileEarmarkFontFill, FileEarmarkPdfFill, FiletypeDocx} from 'react-bootstrap-icons';
 
 const _ = require('lodash');
 
@@ -120,6 +120,13 @@ class TemplateForm extends React.Component {
                     className={'me-2'}
                     variant={'outline-primary'}>
                     <FileEarmarkFontFill className={'me-2'}/> Text
+                </Button>
+                <Button
+                    disabled={!this.state.templateId}
+                    onClick={(e) => this.handleGenerateClick('docx')}
+                    className={'me-2'}
+                    variant={'outline-primary'}>
+                    <FiletypeDocx className={'me-2'} /> DocX
                 </Button>
                 <Button
                     disabled={!this.state.templateId}

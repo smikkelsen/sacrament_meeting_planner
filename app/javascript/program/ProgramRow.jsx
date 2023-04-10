@@ -373,10 +373,10 @@ class ProgramRow extends React.Component {
     }
 
     renderConduct(program) {
-        if (program.conduct) {
+        if (program.conducting) {
             return(
                 <Badge pill bg="secondary" className={'me-2 mb-1'}>
-                    <span><b>Prep:</b> {program.conduct.first_name}</span>
+                    <span><b>Conduct:</b> {program.conducting.first_name}</span>
                 </Badge>
             )
         } else {return('')}

@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  root to: 'pages#dashboard'
+  root to: 'pages#programs'
 
   get 'session', to: 'sessions#new', as: :new_session
   get 'session/create', to: 'sessions#create', as: :create_session
