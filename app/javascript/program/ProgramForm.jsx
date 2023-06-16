@@ -1,9 +1,10 @@
 import React from 'react';
-import {Form, Row, Col} from "react-bootstrap";
-import {findArrayElementByAttribute} from '../common/utils.js';
+import {Form, Row, Col, Alert} from "react-bootstrap";
+import {findArrayElementByAttribute, formatDateString, humanize} from '../common/utils.js';
 import {isMeetingType} from './programHelpers.js';
 import {FloatingLabel} from "react-bootstrap";
 import ProgramItemForm from './ProgramItemForm';
+import {fetchLastUsedHymnProgram} from "../common/api";
 
 const _ = require('lodash');
 
@@ -25,8 +26,10 @@ class ProgramForm extends React.Component {
         this.handleProgramItemsUpdate = this.handleProgramItemsUpdate.bind(this);
         this.renderUserSelect = this.renderUserSelect.bind(this);
         this.renderHymnSelect = this.renderHymnSelect.bind(this);
+        this.renderHymnLastUsed = this.renderHymnLastUsed.bind(this);
         this.state = {
-            program: this.props.program
+            program: this.props.program,
+            lastUsedHymnMessaage: null
         };
     }
 
@@ -61,7 +64,7 @@ class ProgramForm extends React.Component {
                 <Form.Select
                     id={attributeId}
                     value={this.renderInputValue(attributeId)}
-                    onChange={(e) => this.handleNestedObjChange(this.props.hymns, hymnType, e)}
+                    onChange={(e) => this.handleHymnChange(this.props.hymns, hymnType, e)}
                     disabled={!this.hasRole(role)}>
                     <option></option>
                     {this.props.hymns.map(hymn => (
@@ -84,6 +87,41 @@ class ProgramForm extends React.Component {
         this.setState(prevState => {
             return {program: {...prevState.program, [nestedKey]: obj}}
         }, this.props.handleToDirty(true))
+    }
+
+    handleHymnChange(array, nestedKey, e) {
+        var hymnId = e.target.value;
+        fetchLastUsedHymnProgram(hymnId).then(
+            (result) => {
+                var message = 'this ' + humanize(nestedKey)
+                if (result.programs.length > 0 && result.programs[0].id != hymnId) {
+                    console.log(result.programs[0])
+                    message = message + ' was last used on ' + formatDateString(result.programs[0].date, 'MMM do yyyy')
+                } else {
+                    message = message + ' has never been used'
+                }
+                this.setState({lastUsedHymnMessaage: message})
+            },
+            (error) => {
+                console.log('failed to find recent usages of this hymn');
+                this.setState({
+                    error: error
+                });
+            }
+        );
+        this.handleNestedObjChange(array, nestedKey, e)
+    }
+
+    renderHymnLastUsed() {
+        if (this.state.lastUsedHymnMessaage) {
+            return (
+                <Alert variant={'info'}>
+                    {this.state.lastUsedHymnMessaage}
+                </Alert>
+            )
+        } else {
+            return ('')
+        }
     }
 
     handleInputChange(e) {
@@ -166,6 +204,7 @@ class ProgramForm extends React.Component {
                                         {this.renderHymnSelect('Closing Hymn', 'closing_hymn', 'music')}
                                     </Col>
                                 </Row>
+                                {this.renderHymnLastUsed()}
                                 <hr/>
                             </>
                         }
@@ -230,6 +269,16 @@ class ProgramForm extends React.Component {
                             programItems={this.state.program.program_items}
                             itemTypes={['sustaining']}
                             addType={'sustaining'}
+                            currentUser={this.props.currentUser}
+                            handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
+                        />
+                        <hr/>
+                        <h4>Business</h4>
+                        <ProgramItemForm
+                            programId={this.state.program.id}
+                            programItems={this.state.program.program_items}
+                            itemTypes={['business']}
+                            addType={'business'}
                             currentUser={this.props.currentUser}
                             handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
                         />

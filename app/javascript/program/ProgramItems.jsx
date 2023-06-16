@@ -33,6 +33,10 @@ class ProgramItems extends React.Component {
                 break;
             case 'release':
                 itemText = <div key={item.id}><span className={'item-label'}></span> {key}{value}</div>
+                break;
+            case 'business':
+                itemText = <div key={item.id}><span className={'item-label'}></span> {key}{value}</div>
+                break;
         }
         return (itemText)
     }

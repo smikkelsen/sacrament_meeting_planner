@@ -319,9 +319,13 @@ class ProgramItemForm extends React.Component {
                 case 'sustaining':
                     itemInputs.push(this.renderTwoBox(item, index, 'Sustaining', 'Person', 'Calling'));
                     break;
+                case 'business':
+                    itemInputs.push(this.renderOneBox(item, index, 'Business', 'Value'));
+                    break;
                 case 'program_new':
                 case 'announcement_new':
                 case 'sustaining_new':
+                case 'business_new':
                 case 'release_new':
                     itemInputs.push(this.renderNew(item, index));
                     break;

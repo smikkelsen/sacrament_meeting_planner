@@ -165,6 +165,7 @@ class ProgramRows extends React.Component {
                                     <option value={'program_other'}>Other Program</option>
                                     <option value={'announcement'}>Announcement</option>
                                     <option value={'notes'}>Notes</option>
+                                    <option value={'hymns'}>Hymns</option>
                                 </Form.Select>
                             </FloatingLabel>
                         </Col>

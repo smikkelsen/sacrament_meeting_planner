@@ -357,6 +357,8 @@ class ProgramRow extends React.Component {
                                   itemTypes={['sustaining']}/>
                     <ProgramItems cardTitle={'Releases'} programItems={program.program_items}
                                   itemTypes={['release']}/>
+                    <ProgramItems cardTitle={'Business'} programItems={program.program_items}
+                                  itemTypes={['business']}/>
                 </>
             )
         }

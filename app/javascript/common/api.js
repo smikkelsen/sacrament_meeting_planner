@@ -10,6 +10,20 @@ export const fetchPrograms = (params = {}) => {
     )
 }
 
+export const fetchLastUsedHymnProgram = (hymn_id) => {
+    const url = new URL("/api/v1/programs", document.baseURI);
+    let today = new Date().toISOString().slice(0, 10)
+    url.searchParams.set('end_date', today);
+    url.searchParams.set('per_page', '1');
+    url.searchParams.set('date_order', 'desc');
+    url.searchParams.set('search_type', 'hymns');
+    url.searchParams.set('search_value', hymn_id);
+    return (
+        fetch(url)
+            .then(res => res.json())
+    )
+}
+
 export const fetchUsers = () => {
     return (
         fetch("/api/v1/users")
