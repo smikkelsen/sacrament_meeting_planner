@@ -397,7 +397,7 @@ class ProgramRow extends React.Component {
                         {this.state.program.is_next ?
                             <span className={'next-bookmark-icon'}><BookmarkStarFill/></span> : ''}
                         <span className={'date me-2'}>
-                            {formatDateString(program.date, this.dateFormatStr())}
+                            T: {formatDateString(program.date, this.dateFormatStr())}
                         </span>
                         <span className={'meeting-type text-info  me-4 mb-1'}>
                             {this.renderMeetingType(program.meeting_type)}
