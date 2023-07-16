@@ -4,7 +4,7 @@ module VariableReplacement
 
       DELEGATE_HYMNS = %w[opening_hymn intermediate_hymn sacrament_hymn closing_hymn]
       DELEGATE_USERS = %w[presiding conducting prep chorister organist]
-      DELEGATE_ITEM_TYPES = %w[speakers musical_numbers program_others releases sustainings announcements]
+      DELEGATE_ITEM_TYPES = %w[speakers musical_numbers program_others releases sustainings announcements business]
 
       def program
         return @program if @program

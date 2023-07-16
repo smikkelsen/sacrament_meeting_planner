@@ -95,7 +95,6 @@ class ProgramForm extends React.Component {
             (result) => {
                 var message = 'this ' + humanize(nestedKey)
                 if (result.programs.length > 0 && result.programs[0].id != hymnId) {
-                    console.log(result.programs[0])
                     message = message + ' was last used on ' + formatDateString(result.programs[0].date, 'MMM do yyyy')
                 } else {
                     message = message + ' has never been used'

@@ -22,6 +22,7 @@ class VariableReplacement::Base
     vars << {display_name: 'Announcements', obj: 'announcements', attributes: program_items_attributes }
     vars << {display_name: 'Releases', obj: 'releases', attributes: program_items_attributes }
     vars << {display_name: 'Sustainings', obj: 'sustainings', attributes: program_items_attributes }
+    vars << {display_name: 'Business', obj: 'business', attributes: program_items_attributes }
     vars
   end
 

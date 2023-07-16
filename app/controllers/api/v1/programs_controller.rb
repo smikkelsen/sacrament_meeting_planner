@@ -42,7 +42,7 @@ module Api
           @programs = @programs.where('date < ?', params[:end_date]) if params[:end_date].present?
           @programs = @programs.where('date > ?', params[:start_date]) if params[:start_date].present?
         end
-        per_page = (params[:per_page] || 10).to_i
+        per_page = (params[:per_page] || 30).to_i
         @programs = @programs.limit(per_page).distinct
       end
 
