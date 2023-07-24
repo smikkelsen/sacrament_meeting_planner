@@ -1,18 +1,11 @@
 import React from 'react';
 import {Button, Form, Card} from 'react-bootstrap';
 import {FloatingLabel} from "react-bootstrap";
-import {fetchTemplates} from "../common/api";
-import {fetchProgramTemplate} from "../common/api";
+import {fetchTemplates, fetchProgramTemplate} from "../common/api";
 import {FileEarmarkFontFill, FileEarmarkPdfFill, FiletypeDocx} from 'react-bootstrap-icons';
+import {hasRole} from '../common/roles.js';
 
 const _ = require('lodash');
-
-const USER_ROLES = {
-    admin: ['admin'],
-    bishopric: ['bishopric', 'bishop', 'admin'],
-    clerk: ['clerk', 'bishopric', 'bishop', 'admin'],
-    music: ['music', 'clerk', 'bishopric', 'bishop', 'admin']
-}
 
 class TemplateForm extends React.Component {
 
@@ -22,7 +15,6 @@ class TemplateForm extends React.Component {
         this.renderInputValue = this.renderInputValue.bind(this);
         this.handleTemplateChange = this.handleTemplateChange.bind(this);
         this.handleGenerateClick = this.handleGenerateClick.bind(this);
-        this.hasRole = this.hasRole.bind(this);
         this.state = {
             templates: [],
             templateId: '',
@@ -94,12 +86,6 @@ class TemplateForm extends React.Component {
         }
     }
 
-    hasRole(role) {
-        return (
-            USER_ROLES[role].includes(this.props.currentUser.role)
-        )
-    }
-
     render() {
         return (
             <Form>
@@ -107,7 +93,7 @@ class TemplateForm extends React.Component {
                     <Form.Select
                         value={this.renderInputValue('templateId')}
                         onChange={(e) => this.handleTemplateChange(e)}
-                        disabled={!this.hasRole('clerk')}>
+                        disabled={!hasRole('clerk', this.props.currentUser.role)}>
                         <option value={''}>Choose Template</option>
                         {this.state.templates.map(template => (
                             <option key={template.id} value={template.id}>{template.name}</option>

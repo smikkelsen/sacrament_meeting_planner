@@ -3,16 +3,6 @@ import _ from "lodash";
 
 // export const csrfToken = $( 'meta[name="csrf-token"]' ).attr( 'content' )
 
-export const formatDateString = (str, pattern = 'MMM do yyyy h:mm aaa') => {
-    if (str) {
-        const isoDate = Date.parse(str)
-        const timeZone = 'UTC'
-        return format(utcToZonedTime(isoDate, timeZone), pattern);
-    } else {
-        return 'Never';
-    }
-};
-
 export const findArrayElementByAttribute = (array, value, attributeType = 'id') => {
     return array.find((element) => {
         return element.id == value;
@@ -37,3 +27,16 @@ export const scrollIntoViewWithOffset = (selector, offset) => {
     })
 }
 
+export const sortProgramsByDate = (programs, direction) => {
+    let sorted = programs.sort((a, b) => new Date(a.date) - new Date(b.date));
+    if (direction === 'desc') {
+        sorted = sorted.reverse;
+    }
+    return (sorted)
+}
+
+export const dedupPrograms = (programs) => {
+    return (
+        [...new Map(programs.map((m) => [m.id, m])).values()]
+    )
+}

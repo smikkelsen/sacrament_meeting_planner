@@ -13,4 +13,7 @@ class PagesController < ApplicationController
 
   def programs
   end
+
+  def reports
+  end
 end

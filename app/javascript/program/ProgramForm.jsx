@@ -1,19 +1,14 @@
 import React from 'react';
 import {Form, Row, Col, Alert} from "react-bootstrap";
-import {findArrayElementByAttribute, formatDateString, humanize} from '../common/utils.js';
+import {findArrayElementByAttribute, humanize} from '../common/utils.js';
+import {formatDateString} from '../common/date.js';
+import {hasRole} from '../common/roles.js';
 import {isMeetingType} from './programHelpers.js';
 import {FloatingLabel} from "react-bootstrap";
 import ProgramItemForm from './ProgramItemForm';
 import {fetchLastUsedHymnProgram} from "../common/api";
 
 const _ = require('lodash');
-
-const USER_ROLES = {
-    admin: ['admin'],
-    bishopric: ['bishopric', 'bishop', 'admin'],
-    clerk: ['clerk', 'bishopric', 'bishop', 'admin'],
-    music: ['music', 'clerk', 'bishopric', 'bishop', 'admin']
-}
 
 class ProgramForm extends React.Component {
 
@@ -22,7 +17,6 @@ class ProgramForm extends React.Component {
         this.renderInputValue = this.renderInputValue.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleNestedObjChange = this.handleNestedObjChange.bind(this);
-        this.hasRole = this.hasRole.bind(this);
         this.handleProgramItemsUpdate = this.handleProgramItemsUpdate.bind(this);
         this.renderUserSelect = this.renderUserSelect.bind(this);
         this.renderHymnSelect = this.renderHymnSelect.bind(this);
@@ -45,7 +39,7 @@ class ProgramForm extends React.Component {
             <FloatingLabel label={label} controlId={attributeId}>
                 <Form.Select value={this.renderInputValue(attributeId)}
                              onChange={(e) => this.handleNestedObjChange(this.props.users, userType, e)}
-                             disabled={!this.hasRole(role)}>
+                             disabled={!hasRole(role, this.props.currentUser.role)}>
                     <option></option>
                     {this.props.users.filter(function (u) {
                         return u[userTypeFilter] === true
@@ -65,7 +59,7 @@ class ProgramForm extends React.Component {
                     id={attributeId}
                     value={this.renderInputValue(attributeId)}
                     onChange={(e) => this.handleHymnChange(this.props.hymns, hymnType, e)}
-                    disabled={!this.hasRole(role)}>
+                    disabled={!hasRole(role, this.props.currentUser.role)}>
                     <option></option>
                     {this.props.hymns.map(hymn => (
                         <option key={hymn.id} value={hymn.id}>#{hymn.page} {hymn.name}</option>
@@ -129,12 +123,6 @@ class ProgramForm extends React.Component {
         }, this.props.handleToDirty(true))
     }
 
-    hasRole(role) {
-        return (
-            USER_ROLES[role].includes(this.props.currentUser.role)
-        )
-    }
-
     handleProgramItemsUpdate(programItems) {
         this.setState(prevState => {
             return {program: {...prevState.program, program_items: programItems}}
@@ -157,7 +145,7 @@ class ProgramForm extends React.Component {
                     <Form.Select
                         value={this.renderInputValue('meeting_type')}
                         onChange={(e) => this.handleInputChange(e)}
-                        disabled={!this.hasRole('clerk')}>
+                        disabled={!hasRole('clerk', this.props.currentUser.role)}>
                         <option value={'standard'}>Standard</option>
                         <option value={'fast_sunday'}>Fast Sunday</option>
                         <option value={'ward_conference'}>Ward Conference</option>
@@ -214,7 +202,7 @@ class ProgramForm extends React.Component {
                                     <Form.Control
                                         value={this.renderInputValue('opening_prayer')}
                                         onChange={(e) => this.handleInputChange(e)}
-                                        disabled={!this.hasRole('clerk')}/>
+                                        disabled={!hasRole('clerk', this.props.currentUser.role)}/>
                                 </FloatingLabel>
                             </Col>
                             <Col md={6} sm={12}>
@@ -223,12 +211,12 @@ class ProgramForm extends React.Component {
                                     <Form.Control
                                         value={this.renderInputValue('closing_prayer')}
                                         onChange={(e) => this.handleInputChange(e)}
-                                        disabled={!this.hasRole('clerk')}/>
+                                        disabled={!hasRole('clerk', this.props.currentUser.role)}/>
                                 </FloatingLabel>
                             </Col>
                         </Row>
                         <hr/>
-                        {isMeetingType(this.state.program.meeting_type, ['fast_sunday']) ? '' :
+                        {isMeetingType(this.state.program.meeting_type, ['fast_sunday']) || !hasRole('clerk', this.props.currentUser.role) ? '' :
                             <>
                                 <h4>Program</h4>
                                 <ProgramItemForm
@@ -242,56 +230,60 @@ class ProgramForm extends React.Component {
                                 <hr/>
                             </>
                         }
-                        <h4>Announcements</h4>
-                        <ProgramItemForm
-                            programId={this.state.program.id}
-                            programItems={this.state.program.program_items}
-                            itemTypes={['announcement']}
-                            addType={'announcement'}
-                            currentUser={this.props.currentUser}
-                            handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
-                        />
-                        <hr/>
-                        <h4>Releases</h4>
-                        <ProgramItemForm
-                            programId={this.state.program.id}
-                            programItems={this.state.program.program_items}
-                            itemTypes={['release']}
-                            addType={'release'}
-                            currentUser={this.props.currentUser}
-                            handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
-                        />
-                        <hr/>
-                        <h4>Sustaining</h4>
-                        <ProgramItemForm
-                            programId={this.state.program.id}
-                            programItems={this.state.program.program_items}
-                            itemTypes={['sustaining']}
-                            addType={'sustaining'}
-                            currentUser={this.props.currentUser}
-                            handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
-                        />
-                        <hr/>
-                        <h4>Business</h4>
-                        <ProgramItemForm
-                            programId={this.state.program.id}
-                            programItems={this.state.program.program_items}
-                            itemTypes={['business']}
-                            addType={'business'}
-                            currentUser={this.props.currentUser}
-                            handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
-                        />
+                        {!hasRole('clerk', this.props.currentUser.role) ? '' :
+                            <>
+                                <h4>Announcements</h4>
+                                <ProgramItemForm
+                                    programId={this.state.program.id}
+                                    programItems={this.state.program.program_items}
+                                    itemTypes={['announcement']}
+                                    addType={'announcement'}
+                                    currentUser={this.props.currentUser}
+                                    handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
+                                />
+                                <hr/>
+                                <h4>Releases</h4>
+                                <ProgramItemForm
+                                    programId={this.state.program.id}
+                                    programItems={this.state.program.program_items}
+                                    itemTypes={['release']}
+                                    addType={'release'}
+                                    currentUser={this.props.currentUser}
+                                    handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
+                                />
+                                <hr/>
+                                <h4>Sustaining</h4>
+                                <ProgramItemForm
+                                    programId={this.state.program.id}
+                                    programItems={this.state.program.program_items}
+                                    itemTypes={['sustaining']}
+                                    addType={'sustaining'}
+                                    currentUser={this.props.currentUser}
+                                    handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
+                                />
+                                <hr/>
+                                <h4>Business</h4>
+                                <ProgramItemForm
+                                    programId={this.state.program.id}
+                                    programItems={this.state.program.program_items}
+                                    itemTypes={['business']}
+                                    addType={'business'}
+                                    currentUser={this.props.currentUser}
+                                    handleToUpdate={this.handleProgramItemsUpdate.bind(this)}
+                                />
+                                <hr/>
+                                <Form.Group sm={12} controlId={'notes'}>
+                                    <Form.Label>Notes</Form.Label>
+                                    <Form.Control as="textarea" rows={3}
+                                                  value={this.renderInputValue('notes')}
+                                                  onChange={(e) => this.handleInputChange(e)}
+                                                  disabled={!hasRole('bishopric', this.props.currentUser.role)}
+                                    />
+                                </Form.Group>
+                            </>
+                        }
                     </>
                 }
-                <hr/>
-                <Form.Group sm={12} controlId={'notes'}>
-                    <Form.Label>Notes</Form.Label>
-                    <Form.Control as="textarea" rows={3}
-                                  value={this.renderInputValue('notes')}
-                                  onChange={(e) => this.handleInputChange(e)}
-                                  disabled={!this.hasRole('bishopric')}
-                    />
-                </Form.Group>
             </Form>
         )
     }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Modal, Button, Row, Col, Card, Badge} from 'react-bootstrap';
-import {formatDateString} from '../common/utils.js';
+import {formatDateString} from '../common/date.js';
+import {hasRole} from '../common/roles.js';
 import {isMeetingType} from './programHelpers.js';
 import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf, BookmarkStarFill} from 'react-bootstrap-icons';
 import ProgramItems from "./ProgramItems";
@@ -9,13 +10,6 @@ import TemplateForm from "./TemplateForm";
 import {csrfToken} from "../common/api";
 
 const _ = require('lodash');
-
-const USER_ROLES = {
-    admin: ['admin'],
-    bishopric: ['bishopric', 'bishop', 'admin'],
-    clerk: ['clerk', 'bishopric', 'bishop', 'admin'],
-    music: ['music', 'clerk', 'bishopric', 'bishop', 'admin']
-}
 
 class ProgramRow extends React.Component {
 
@@ -27,7 +21,6 @@ class ProgramRow extends React.Component {
         this.handleCollapse = this.handleCollapse.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleTemplate = this.handleTemplate.bind(this);
-        this.hasRole = this.hasRole.bind(this);
         this.renderEditModal = this.renderEditModal.bind(this);
         this.renderTemplateModal = this.renderTemplateModal.bind(this);
         this.renderProgramNotes = this.renderProgramNotes.bind(this);
@@ -38,6 +31,7 @@ class ProgramRow extends React.Component {
         this.renderMusicNeeded = this.renderMusicNeeded.bind(this);
         this.renderPrayersNeeded = this.renderPrayersNeeded.bind(this);
         this.submitForm = this.submitForm.bind(this);
+        this.handlePublish = this.handlePublish.bind(this);
         this.renderFormSubmitButton = this.renderFormSubmitButton.bind(this);
         this.dateFormatStr = this.dateFormatStr.bind(this);
 
@@ -73,13 +67,6 @@ class ProgramRow extends React.Component {
             this.setState({expanded: false})
         }
     }
-
-    hasRole(role) {
-        return (
-            USER_ROLES[role].includes(this.props.currentUser.role)
-        )
-    }
-
 
     renderMeetingType(meetingType, prefix = '') {
         return ((meetingType === 'standard') ? '' : `${prefix}${_.startCase(meetingType)}`)
@@ -132,6 +119,35 @@ class ProgramRow extends React.Component {
             .then(
                 (result) => {
                     this.setState({program: result, dirty: false, showEditModal: false})
+                },
+                (error) => {
+                    console.log('error saving program')
+                    console.log(error)
+                    this.setState({
+                        error: error
+                    });
+                }
+            )
+    }
+
+    handlePublish() {
+        let params = {
+            published: !this.state.program.published,
+        }
+
+        fetch("/api/v1/programs/" + this.props.program.id, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(params)
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({program: result})
                 },
                 (error) => {
                     console.log('error saving program')
@@ -216,10 +232,10 @@ class ProgramRow extends React.Component {
     }
 
     renderProgramNotes(notes) {
-        if (notes) {
+        if (notes && hasRole('clerk', this.props.currentUser.role)) {
             return (
                 <Col sm={12}>
-                    <Card className={'notes'}>
+                    <Card className={'clerk'}>
                         <Card.Body>
                             <Card.Title>Notes</Card.Title>
                             <div>{notes}</div>
@@ -347,7 +363,7 @@ class ProgramRow extends React.Component {
     renderBusiness(program) {
         if (isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) {
             return ''
-        } else {
+        } else if(hasRole('clerk', this.props.currentUser.role)) {
             return (
                 <>
                     <ProgramItems cardTitle={'Announcements'}
@@ -361,6 +377,8 @@ class ProgramRow extends React.Component {
                                   itemTypes={['business']}/>
                 </>
             )
+        } else {
+            return('')
         }
     }
 
@@ -440,11 +458,17 @@ class ProgramRow extends React.Component {
                         </Button>
                         {this.renderFormSubmitButton()}
                         <Button
-                            disabled={!this.hasRole('clerk')}
+                            disabled={!hasRole('clerk', this.props.currentUser.role)}
                             onClick={(e) => this.handleTemplate(e)}
                             className={'me-2'}>
                             <FileEarmarkPdf className={'me-2'}/>
                             Generate Template
+                        </Button>
+                        <Button
+                            disabled={!hasRole('clerk', this.props.currentUser.role)}
+                            onClick={() => this.handlePublish()}
+                            className={'me-2'}>
+                            {program.published ? 'Unpublish' : 'Publish'}
                         </Button>
                     </Col>
                 </Card.Footer>

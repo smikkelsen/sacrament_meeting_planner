@@ -14,6 +14,11 @@
               <%= link_to 'Programs', programs_page_path, class: 'nav-link' %>
             </li>
           <% end %>
+          <% if can?(:read, :reports) %>
+            <li class="nav-item">
+              <%= link_to 'Reports', reports_page_path, class: 'nav-link' %>
+            </li>
+          <% end %>
           <% if can?(:read, Hymn) || can?(:read, ::Template) %>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

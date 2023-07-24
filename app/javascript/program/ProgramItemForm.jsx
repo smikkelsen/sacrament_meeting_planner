@@ -2,23 +2,16 @@ import React from 'react';
 import {Spinner, Col, Row, InputGroup, Form, Button, Modal} from "react-bootstrap";
 import {Trash3Fill, CloudArrowDownFill} from 'react-bootstrap-icons';
 import {findArrayElementByAttribute, humanize} from '../common/utils.js';
+import {hasRole} from '../common/roles.js';
 import {fetchTrelloListCards} from "../common/api";
 
 const _ = require('lodash');
-
-const USER_ROLES = {
-    admin: ['admin'],
-    bishopric: ['bishopric', 'bishop', 'admin'],
-    clerk: ['clerk', 'bishopric', 'bishop', 'admin'],
-    music: ['music', 'clerk', 'bishopric', 'bishop', 'admin']
-}
 
 class ProgramItemForm extends React.Component {
 
     constructor(props) {
         super(props);
         this.handleProgramItemChange = this.handleProgramItemChange.bind(this);
-        this.hasRole = this.hasRole.bind(this);
         this.addProgramItemsToForm = this.addProgramItemsToForm.bind(this);
         this.removeProgramItemFromForm = this.removeProgramItemFromForm.bind(this);
         this.renderInputValue = this.renderInputValue.bind(this);
@@ -83,12 +76,6 @@ class ProgramItemForm extends React.Component {
         })
     }
 
-    hasRole(role) {
-        return (
-            USER_ROLES[role].includes(this.props.currentUser.role)
-        )
-    }
-
     singleType() {
         return (this.props.itemTypes.length === 1);
     }
@@ -104,9 +91,9 @@ class ProgramItemForm extends React.Component {
                             placeholder={label}
                             value={this.renderInputValue(item.id, 'key')}
                             onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
+                            disabled={!hasRole('bishopric', this.props.currentUser.role)}/>
                         <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
-                                disabled={!this.hasRole('bishopric')}
+                                disabled={!hasRole('bishopric', this.props.currentUser.role)}
                                 variant={'danger'}><Trash3Fill/></Button>
                     </InputGroup>
                 </Col>
@@ -125,7 +112,7 @@ class ProgramItemForm extends React.Component {
                             placeholder={label1}
                             value={this.renderInputValue(item.id, 'key')}
                             onChange={(e) => this.handleProgramItemChange(item.id, 'key', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
+                            disabled={!hasRole('bishopric', this.props.currentUser.role)}/>
                     </InputGroup>
                 </Col>
                 <Col md={6} sm={12}>
@@ -135,9 +122,9 @@ class ProgramItemForm extends React.Component {
                             id={`programItems[${index}].value`}
                             value={this.renderInputValue(item.id, 'value')}
                             onChange={(e) => this.handleProgramItemChange(item.id, 'value', e.target.value)}
-                            disabled={!this.hasRole('bishopric')}/>
+                            disabled={!hasRole('bishopric', this.props.currentUser.role)}/>
                         <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
-                                disabled={!this.hasRole('bishopric')}
+                                disabled={!hasRole('bishopric', this.props.currentUser.role)}
                                 variant={'danger'}><Trash3Fill/></Button>
                     </InputGroup>
                 </Col>
@@ -336,10 +323,13 @@ class ProgramItemForm extends React.Component {
                 {itemInputs}
 
                 <Button onClick={(_e) => this.addProgramItemsToForm([{key: '', value: ''}])}
-                        disabled={!this.hasRole('bishopric')}>Add</Button>
+                        disabled={!hasRole('bishopric', this.props.currentUser.role)}>Add</Button>
                 {this.hasTrelloImport() ?
                     <>
-                        <Button disabled={this.state.importingTrello} onClick={(e) => this.handleTrelloImport()}
+                        <Button disabled={
+                            this.state.importingTrello ||
+                            !hasRole('bishopric', this.props.currentUser.role)
+                        } onClick={(e) => this.handleTrelloImport()}
                                 className={'ms-2'}>
                             {this.renderTrelloImportButtonText()}
                         </Button>

@@ -6,7 +6,8 @@ import {FilterCircle} from 'react-bootstrap-icons';
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
 import {fetchPrograms} from "../common/api";
-import {scrollIntoViewWithOffset} from '../common/utils';
+import {scrollIntoViewWithOffset, sortProgramsByDate, dedupPrograms} from '../common/utils';
+import {daysAgo} from '../common/date';
 
 
 class ProgramRows extends React.Component {
@@ -35,6 +36,9 @@ class ProgramRows extends React.Component {
 
     scrollToCurrent() {
         scrollIntoViewWithOffset("#current-program", 80)
+        this.setState({
+            showFilterModal: false
+        });
     }
 
     handleSearch() {
@@ -50,7 +54,8 @@ class ProgramRows extends React.Component {
                 this.setState({
                     programs: result.programs,
                     filtered: true,
-                    loadMore: {top: false, bottom: false}
+                    loadMore: {top: false, bottom: false},
+                    showFilterModal: false
                 });
             },
             (error) => {
@@ -63,12 +68,25 @@ class ProgramRows extends React.Component {
     }
 
     handleClearFilter() {
-        this.setState({
-            searchType: '',
-            searchValue: '',
-            loadMore: {top: true, bottom: true},
-            filtered: true
-        }, this.handleSearch)
+        fetchPrograms({start_date: daysAgo(21).toISOString()}).then(
+            (result) => {
+                this.setState({
+                    programs: result.programs,
+                    searchType: '',
+                    searchValue: '',
+                    loadMore: {top: true, bottom: true},
+                    filtered: true,
+                    showFilterModal: false
+                });
+
+            },
+            (error) => {
+                console.log('failed to load programs');
+                this.setState({
+                    error: error
+                });
+            }
+        );
     }
 
     handleInputChange(e) {
@@ -77,27 +95,26 @@ class ProgramRows extends React.Component {
 
     handleLoadMore(direction) {
         let params = {}
-        let date = null
+        let sorted = sortProgramsByDate(this.state.programs)
         if (direction === 'top') {
-            date = this.state.programs.sort((a, b) => a.date - b.date)[0].date;
-            params['end_date'] = date
+            params['end_date'] = sorted[0].date;
+            params['date_order'] = 'desc';
         } else {
-            date = this.state.programs.sort((a, b) => a.date - b.date).at(-1).date;
-            params['start_date'] = date
-
+            params['start_date'] = sorted.at(-1).date;
         }
 
         fetchPrograms(params).then(
             (result) => {
-                let newPrograms = result.programs.sort((a, b) => a.date - b.date);
+                let newPrograms = sortProgramsByDate(result.programs, 'asc');
                 let loadMore = (newPrograms.length > 0);
                 if (direction === 'top') {
                     newPrograms = newPrograms.concat(this.state.programs)
                 } else {
                     newPrograms = this.state.programs.concat(newPrograms)
                 }
+                let uniquePrograms = dedupPrograms(newPrograms);
                 this.setState({
-                    programs: newPrograms,
+                    programs: uniquePrograms,
                     loadMore: {...this.state.loadMore, [direction]: loadMore}
                 });
             },

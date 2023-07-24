@@ -35,13 +35,8 @@ module Api
           end
 
         end
-        if params[:start_date].blank? && params[:end_date].blank?
-          @programs = @programs.where('date > ?', 3.weeks.ago)
-
-        else
-          @programs = @programs.where('date < ?', params[:end_date]) if params[:end_date].present?
-          @programs = @programs.where('date > ?', params[:start_date]) if params[:start_date].present?
-        end
+        @programs = @programs.where('date <= ?', params[:end_date]) if params[:end_date].present?
+        @programs = @programs.where('date >= ?', params[:start_date]) if params[:start_date].present?
         per_page = (params[:per_page] || 30).to_i
         @programs = @programs.limit(per_page).distinct
       end
@@ -51,8 +46,7 @@ module Api
       end
 
       def generate_template
-        authorize! :show, @program
-        authorize! :show, @template
+        authorize! :generate_template, Program
         @template = ::Template.find(params[:template_id])
         render json: { body: @program.template_replacement(@template.id).html_safe }.to_json
       end
@@ -69,7 +63,7 @@ module Api
         params.require(:program)
               .permit(:meeting_type, :date, :presiding_id, :conducting_id, :prep_id, :chorister_id,
                       :organist_id, :opening_hymn_id, :intermediate_hymn_id, :sacrament_hymn_id, :closing_hymn_id,
-                      :opening_prayer, :closing_prayer, :notes,
+                      :opening_prayer, :closing_prayer, :notes, :published,
                       program_items_attributes: [:id, :key, :value, :item_type, :program_id, :_destroy])
       end
 

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ProgramRows from './ProgramRows';
 import {fetchPrograms, fetchUsers, fetchHymns, fetchCurrentUser} from "../common/api";
+import {daysAgo} from "../common/date";
 
 class App extends React.Component {
 
@@ -19,7 +20,7 @@ class App extends React.Component {
 
 
     componentDidMount() {
-        fetchPrograms().then(
+        fetchPrograms({start_date: daysAgo(21).toISOString()}).then(
             (result) => {
                 this.setState({
                     programs: result.programs

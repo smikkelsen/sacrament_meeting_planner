@@ -4,6 +4,7 @@
   json.opening_prayer program.opening_prayer
   json.closing_prayer program.closing_prayer
   json.notes program.notes
+  json.published program.published
   json.is_next program.next_program?
   json.prep do
     json.id program.prep&.id

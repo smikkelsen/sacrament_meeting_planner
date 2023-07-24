@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get 'templates', to: 'pages#templates', as: :templates_page
   get 'music', to: 'pages#music', as: :music_page
   get 'dashboard', to: 'pages#dashboard', as: :dashboard_page
+  get 'reports', to: 'pages#reports', as: :reports_page
 
   get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
 
