@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root to: 'pages#programs'
 
+  get 'programbeta', to: 'programs#public', as: :public_program
+
   get 'session', to: 'sessions#new', as: :new_session
   get 'session/create', to: 'sessions#create', as: :create_session
   delete 'session/destroy', to: 'sessions#destroy', as: :destroy_session

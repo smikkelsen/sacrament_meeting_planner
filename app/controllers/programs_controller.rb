@@ -27,6 +27,17 @@ class ProgramsController < ApplicationController
     end
   end
 
+  def public
+    @program = Program.next
+    setting = AccountSetting.find_by_name('public_template_id')
+    @template = Template.find(setting.value) if setting
+    if @program&.published && @template
+      render 'programs/generate_template', layout: false
+    else
+      render 'programs/not_available', layout: 'public'
+    end
+  end
+
   def set_program
     @program = Program.find(params[:id])
   end
