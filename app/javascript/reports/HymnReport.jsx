@@ -34,6 +34,7 @@ class HymnReport extends React.Component {
         let dateRange = e.target.value
         let startDate = '';
         let endDate = '';
+        let perPage = 150;
         switch (dateRange) {
             case 'current_month':
                 startDate = startOfMonth().toISOString();
@@ -62,7 +63,7 @@ class HymnReport extends React.Component {
             case '':
                 return (null);
         }
-        fetchPrograms({start_date: startDate, end_date: endDate}).then(
+        fetchPrograms({per_page: perPage, start_date: startDate, end_date: endDate}).then(
             (result) => {
                 this.setState({
                     programs: result.programs,
