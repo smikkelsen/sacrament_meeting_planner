@@ -1,6 +1,6 @@
 class ProgramsController < ApplicationController
   before_action :set_program, only: [:generate_template]
-  load_and_authorize_resource
+  load_and_authorize_resource except: [:public]
 
   def generate_template
     @template = Template.find(params[:template_id])
