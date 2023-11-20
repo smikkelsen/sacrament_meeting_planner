@@ -35,6 +35,11 @@
                     <%= link_to 'Templates', templates_page_path, class: 'dropdown-item' %>
                   </li>
                 <% end %>
+                <% if can?(:edit, ::Program) %>
+                  <li>
+                    <%= link_to 'Bulk Edit', bulk_edit_page_path, class: 'dropdown-item' %>
+                  </li>
+                <% end %>
               </ul>
             </li>
           <% end %>

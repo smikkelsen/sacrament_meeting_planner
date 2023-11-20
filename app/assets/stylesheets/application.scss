@@ -10,6 +10,13 @@ body {
   background-color: lightsteelblue;
 }
 
+form {
+  .input-row {
+    margin-bottom: 1em;
+  }
+
+}
+
 a:hover {
   cursor: pointer;
 }

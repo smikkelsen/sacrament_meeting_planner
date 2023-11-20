@@ -12,7 +12,7 @@ class CreateAnnualProgramsJob < ApplicationJob
     choristers = User.active.where(chorister: true).shuffle.map {|u| [u.id, 0]}.to_h
 
     month_start = start_of_year
-    while month_start < end_of_year
+    while month_start <= end_of_year
       month_end = month_start.end_of_month
       prep = get_next(preppers)
       preppers[prep] += 1

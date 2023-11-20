@@ -25,12 +25,12 @@ class Program < ApplicationRecord
   end
 
   def self.generate(end_date: nil, start_date: nil, prepper: nil, conducting: nil, organist: nil, chorister: nil, presiding: nil)
-    end_date = end_date.nil? ? Date.today.end_of_year : Date.parse(end_date)
+    end_date = end_date.nil? ? Date.current.end_of_year : Date.parse(end_date)
     last_date = start_date ? Date.parse(start_date) : Program.order(date: :desc).first&.date
-    last_date ||= Date.today
-    next_date = last_date.next_occurring(:sunday)
+    last_date ||= Date.current
+    next_date = last_date.sunday? ? last_date : last_date.next_occurring(:sunday)
 
-    while next_date < end_date do
+    while next_date <= end_date do
       unless Program.where(date: next_date).exists?
         meeting_type = (next_date.day < 8) ? :fast_sunday : :standard
         Program.create!(

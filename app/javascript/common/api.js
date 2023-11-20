@@ -95,3 +95,20 @@ export const fetchTemplateVars = (templateType) => {
             .then(res => res.json())
     )
 }
+
+export const bulkEditProgram = (payload) => {
+    let url = "/api/v1/programs/bulk_edit/"
+    let method = "POST"
+    return (
+        fetch(url, {
+            method: method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+    )
+}

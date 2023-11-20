@@ -57,6 +57,20 @@ module Api
         render :show
       end
 
+      def bulk_edit
+        authorize! :update, Program
+        end_date = params[:end_date]
+        start_date = params[:start_date]
+        raise 'Start and End dates are required' unless start_date && end_date
+        program_template = Program.new(bulk_edit_params)
+        programs = Program.where('date >= ? and date <= ?', start_date, end_date)
+        update_attributes = program_template.attributes.select {|k,v| v.present?}
+        programs.update_all(update_attributes)
+        render json: { status: 200, message: "Updated #{programs.count} programs" }.to_json, status: 200
+      rescue => e
+        render json: { status: 400, message: e.message }.to_json, status: 400
+      end
+
       private
 
       def program_params
@@ -65,6 +79,11 @@ module Api
                       :organist_id, :opening_hymn_id, :intermediate_hymn_id, :sacrament_hymn_id, :closing_hymn_id,
                       :opening_prayer, :closing_prayer, :notes, :published,
                       program_items_attributes: [:id, :key, :value, :item_type, :program_id, :_destroy])
+      end
+
+      def bulk_edit_params
+        params.require(:program)
+              .permit(:presiding_id, :conducting_id, :prep_id, :chorister_id, :organist_id)
       end
 
       def set_program

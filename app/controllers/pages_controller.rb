@@ -14,6 +14,9 @@ class PagesController < ApplicationController
   def programs
   end
 
+  def bulk_edit
+  end
+
   def reports
   end
 end
