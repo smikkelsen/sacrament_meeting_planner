@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import {Table, Row, Col, Form, FloatingLabel} from 'react-bootstrap';
 import {fetchPrograms} from "../common/api";
 import {formatDateString, startOfMonth, endOfMonth, startOfYear, endOfYear} from "../common/date";
-import _ from "lodash";
 
-class HymnReport extends React.Component {
+const _ = require('lodash');
+
+class ProgramSummaryReport extends React.Component {
 
     constructor(props) {
         super(props);
@@ -80,18 +81,6 @@ class HymnReport extends React.Component {
         );
     }
 
-    componentDidMount() {
-
-    }
-
-    renderHymnString(hymn) {
-        if (hymn.page) {
-            return (<span>#{hymn.page} {hymn.name}</span>)
-        } else {
-            return ('')
-        }
-    }
-
     renderSearch() {
         return (
             <Col sm={12}>
@@ -112,6 +101,23 @@ class HymnReport extends React.Component {
         )
     }
 
+    renderProgramItems(programItems) {
+        console.log(programItems)
+        return(
+            <Table className={'table table-bordered'}>
+                <tbody>
+            {programItems.filter(pi => (['speaker', 'musical_number', 'program_other'].includes(pi.item_type))).map(programItem => (
+                        <tr key={programItem.id}>
+                        <td><strong>{_.startCase(programItem.item_type)}</strong></td>
+                        <td>{programItem.key}</td>
+                        <td>{programItem.value}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        )
+    }
+
     renderTable() {
         if (this.state.programs) {
             return (
@@ -119,24 +125,18 @@ class HymnReport extends React.Component {
                     <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Organist</th>
-                        <th>Chorister</th>
-                        <th>Opening Hymn</th>
-                        <th>Sacrament Hymn</th>
-                        <th>Intermediate Hymn</th>
-                        <th>Closing Hymn</th>
+                        <th>Meeting Type</th>
+                        <th>Program Items</th>
                     </tr>
                     </thead>
                     <tbody>
                     {this.state.programs.map(program => (
                         <tr key={program.id}>
                             <td>{formatDateString(program.date, 'MMM do yyyy')}</td>
-                            <td>{program.organist.full_name}</td>
-                            <td>{program.chorister.full_name}</td>
-                            <td>{this.renderHymnString(program.opening_hymn)}</td>
-                            <td>{this.renderHymnString(program.sacrament_hymn)}</td>
-                            <td>{this.renderHymnString(program.intermediate_hymn)}</td>
-                            <td>{this.renderHymnString(program.closing_hymn)}</td>
+                            <td>{_.startCase(program.meeting_type)}</td>
+                            <td>
+                                {this.renderProgramItems(program.program_items)}
+                            </td>
                         </tr>
                     ))}
                     </tbody>
@@ -162,4 +162,4 @@ class HymnReport extends React.Component {
     }
 }
 
-export default HymnReport
+export default ProgramSummaryReport

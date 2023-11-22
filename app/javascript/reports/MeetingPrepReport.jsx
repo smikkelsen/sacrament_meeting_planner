@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import {Table, Row, Col, Form, FloatingLabel} from 'react-bootstrap';
 import {fetchPrograms} from "../common/api";
 import {formatDateString, startOfMonth, endOfMonth, startOfYear, endOfYear} from "../common/date";
-import _ from "lodash";
 
-class HymnReport extends React.Component {
+const _ = require('lodash');
+
+class MeetingPrepReport extends React.Component {
 
     constructor(props) {
         super(props);
@@ -84,14 +85,6 @@ class HymnReport extends React.Component {
 
     }
 
-    renderHymnString(hymn) {
-        if (hymn.page) {
-            return (<span>#{hymn.page} {hymn.name}</span>)
-        } else {
-            return ('')
-        }
-    }
-
     renderSearch() {
         return (
             <Col sm={12}>
@@ -119,24 +112,20 @@ class HymnReport extends React.Component {
                     <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Organist</th>
-                        <th>Chorister</th>
-                        <th>Opening Hymn</th>
-                        <th>Sacrament Hymn</th>
-                        <th>Intermediate Hymn</th>
-                        <th>Closing Hymn</th>
+                        <th>Meeting Type</th>
+                        <th>Meeting Prep</th>
+                        <th>Conducting</th>
+                        <th>Notes</th>
                     </tr>
                     </thead>
                     <tbody>
                     {this.state.programs.map(program => (
                         <tr key={program.id}>
                             <td>{formatDateString(program.date, 'MMM do yyyy')}</td>
-                            <td>{program.organist.full_name}</td>
-                            <td>{program.chorister.full_name}</td>
-                            <td>{this.renderHymnString(program.opening_hymn)}</td>
-                            <td>{this.renderHymnString(program.sacrament_hymn)}</td>
-                            <td>{this.renderHymnString(program.intermediate_hymn)}</td>
-                            <td>{this.renderHymnString(program.closing_hymn)}</td>
+                            <td>{_.startCase(program.meeting_type)}</td>
+                            <td>{program.prep.full_name}</td>
+                            <td>{program.conducting.full_name}</td>
+                            <td>{program.notes}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -162,4 +151,4 @@ class HymnReport extends React.Component {
     }
 }
 
-export default HymnReport
+export default MeetingPrepReport

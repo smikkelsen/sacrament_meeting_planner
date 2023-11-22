@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import HymnReport from './HymnReport';
+import MeetingPrepReport from './MeetingPrepReport';
+import ProgramSummaryReport from './ProgramSummaryReport';
 import {hasRole} from '../common/roles.js';
 import {Row, Col, FloatingLabel, Form} from "react-bootstrap";
 import _ from "lodash";
 import {fetchCurrentUser, fetchHymns} from "../common/api";
-import ProgramRows from "../program/ProgramRows";
 
 class App extends React.Component {
 
@@ -54,6 +55,12 @@ class App extends React.Component {
 
     renderReport() {
         switch (this.state.reportType) {
+            case 'meeting-prep':
+                return (<MeetingPrepReport></MeetingPrepReport>)
+                break;
+            case 'program-summary':
+                return (<ProgramSummaryReport></ProgramSummaryReport>)
+                break;
             case 'hymn':
                 return (<HymnReport></HymnReport>)
                 break;
@@ -69,6 +76,12 @@ class App extends React.Component {
         ]
         if (hasRole('music', this.state.currentUser.role)) {
             reportTypeOptions.push({key: 2, value: 'hymn', label: 'Music'})
+        }
+        if (hasRole('bishopric', this.state.currentUser.role)) {
+            reportTypeOptions.push({key: 3, value: 'meeting-prep', label: 'Meeting Prep'})
+        }
+        if (hasRole('bishopric', this.state.currentUser.role)) {
+            reportTypeOptions.push({key: 4, value: 'program-summary', label: 'Program Summary'})
         }
         return (
             <Col sm={12}>
