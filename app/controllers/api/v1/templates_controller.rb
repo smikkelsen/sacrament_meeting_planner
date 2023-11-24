@@ -8,6 +8,7 @@ module Api
       end
 
       def show
+        authorize! :read, @template
       end
 
       def create
@@ -21,6 +22,7 @@ module Api
       end
 
       def update
+        authorize! :update, @template
         if @template.update(template_params)
           render :show
         else

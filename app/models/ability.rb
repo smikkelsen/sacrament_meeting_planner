@@ -39,6 +39,7 @@ class Ability
       can [:read], :reports
     when 'admin'
       can :manage, :all
+      can :manage, User
     end
   end
 end

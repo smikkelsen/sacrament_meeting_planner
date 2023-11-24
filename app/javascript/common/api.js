@@ -31,6 +31,13 @@ export const fetchUsers = () => {
     )
 }
 
+export const fetchUserRoles = () => {
+    return (
+        fetch("/api/v1/users/user_roles")
+            .then(res => res.json())
+    )
+}
+
 export const fetchCurrentUser = () => {
     return (
         fetch("/api/v1/users/current")
@@ -99,6 +106,23 @@ export const fetchTemplateVars = (templateType) => {
 export const bulkEditProgram = (payload) => {
     let url = "/api/v1/programs/bulk_edit/"
     let method = "POST"
+    return (
+        fetch(url, {
+            method: method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+    )
+}
+
+export const updateUser = (userId, payload) => {
+    let url = `/api/v1/users/${userId}`
+    let method = "PUT"
     return (
         fetch(url, {
             method: method,

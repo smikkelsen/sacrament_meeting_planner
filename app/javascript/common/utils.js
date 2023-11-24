@@ -5,7 +5,7 @@ import _ from "lodash";
 
 export const findArrayElementByAttribute = (array, value, attributeType = 'id') => {
     return array.find((element) => {
-        return element.id == value;
+        return element[attributeType] == value;
     })
 }
 
@@ -38,5 +38,11 @@ export const sortProgramsByDate = (programs, direction) => {
 export const dedupPrograms = (programs) => {
     return (
         [...new Map(programs.map((m) => [m.id, m])).values()]
+    )
+}
+
+export const boolToStr = (bool) => {
+    return (
+        bool ? 'Yes' : 'No'
     )
 }

@@ -5,6 +5,9 @@ class PagesController < ApplicationController
   def dashboard
   end
 
+  def users
+  end
+
   def hymns
   end
 

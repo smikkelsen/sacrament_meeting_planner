@@ -1,0 +1,1 @@
+json.array! @roles, :id, :value, :label
