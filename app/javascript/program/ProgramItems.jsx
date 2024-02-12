@@ -18,6 +18,10 @@ class ProgramItems extends React.Component {
             case 'speaker':
                 itemText = <div key={item.id}><span className={'item-label'}>Speaker:</span> {key}{value}</div>
                 break;
+            case 'intermediate_hymn':
+                itemText =
+                    <div key={item.id}><span className={'item-label'}>Intermediate Hymn:</span> {this.props.intermediateHymnText}</div>
+                break;
             case 'musical_number':
                 itemText =
                     <div key={item.id}><span className={'item-label'}>Musical Number:</span> {key}{value}</div>

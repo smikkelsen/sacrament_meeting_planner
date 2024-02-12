@@ -179,6 +179,7 @@ class ProgramRow extends React.Component {
                         currentUser={this.props.currentUser}
                         users={this.props.users}
                         hymns={this.props.hymns}
+                        intermediateHymnText={this.intermediateHymnText()}
                         handleToUpdate={this.handleProgramFormUpdate.bind(this)}
                         handleToDirty={this.handleProgramFormDirty.bind(this)}
                     />
@@ -221,6 +222,14 @@ class ProgramRow extends React.Component {
         } else {
             return ('')
         }
+    }
+
+    intermediateHymnText() {
+        let intermediateHymnText = this.renderHymn(this.state.program.intermediate_hymn)
+        if (intermediateHymnText == '') {
+            intermediateHymnText = 'No hymn selected'
+        }
+        return (intermediateHymnText)
     }
 
     renderPerson(person) {
@@ -333,7 +342,8 @@ class ProgramRow extends React.Component {
         } else {
             return (
                 <ProgramItems cardTitle={'Program'} programItems={program.program_items}
-                              itemTypes={['speaker', 'musical_number', 'program_other']}/>
+                              intermediateHymnText={this.intermediateHymnText()}
+                              itemTypes={['speaker', 'intermediate_hymn', 'musical_number', 'program_other']}/>
             )
         }
     }
@@ -363,7 +373,7 @@ class ProgramRow extends React.Component {
     renderBusiness(program) {
         if (isMeetingType(program.meeting_type, ['stake_conference', 'general_conference'])) {
             return ''
-        } else if(hasRole('clerk', this.props.currentUser.role)) {
+        } else if (hasRole('clerk', this.props.currentUser.role)) {
             return (
                 <>
                     <ProgramItems cardTitle={'Announcements'}
@@ -378,28 +388,32 @@ class ProgramRow extends React.Component {
                 </>
             )
         } else {
-            return('')
+            return ('')
         }
     }
 
     renderPrep(program) {
         if (program.prep) {
-            return(
+            return (
                 <Badge pill bg="secondary" className={'me-1 mb-1'}>
                     <span><b>Prep:</b> {program.prep.first_name}</span>
                 </Badge>
             )
-        } else {return('')}
+        } else {
+            return ('')
+        }
     }
 
     renderConduct(program) {
         if (program.conducting) {
-            return(
+            return (
                 <Badge pill bg="secondary" className={'me-2 mb-1'}>
                     <span><b>Conduct:</b> {program.conducting.first_name}</span>
                 </Badge>
             )
-        } else {return('')}
+        } else {
+            return ('')
+        }
     }
 
     render() {

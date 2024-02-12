@@ -85,23 +85,25 @@ class ProgramForm extends React.Component {
 
     handleHymnChange(array, nestedKey, e) {
         var hymnId = e.target.value;
-        fetchLastUsedHymnProgram(hymnId).then(
-            (result) => {
-                var message = 'this ' + humanize(nestedKey)
-                if (result.programs.length > 0 && result.programs[0].id != hymnId) {
-                    message = message + ' was last used on ' + formatDateString(result.programs[0].date, 'MMM do yyyy')
-                } else {
-                    message = message + ' has never been used'
+        if(hymnId) {
+            fetchLastUsedHymnProgram(hymnId).then(
+                (result) => {
+                    var message = 'this ' + humanize(nestedKey)
+                    if (result.programs.length > 0 && result.programs[0].id != hymnId) {
+                        message = message + ' was last used on ' + formatDateString(result.programs[0].date, 'MMM do yyyy')
+                    } else {
+                        message = message + ' has never been used'
+                    }
+                    this.setState({lastUsedHymnMessaage: message})
+                },
+                (error) => {
+                    console.log('failed to find recent usages of this hymn');
+                    this.setState({
+                        error: error
+                    });
                 }
-                this.setState({lastUsedHymnMessaage: message})
-            },
-            (error) => {
-                console.log('failed to find recent usages of this hymn');
-                this.setState({
-                    error: error
-                });
-            }
-        );
+            );
+        }
         this.handleNestedObjChange(array, nestedKey, e)
     }
 
@@ -221,8 +223,9 @@ class ProgramForm extends React.Component {
                                 <h4>Program</h4>
                                 <ProgramItemForm
                                     programId={this.state.program.id}
+                                    intermediateHymnText={this.props.intermediateHymnText}
                                     programItems={this.state.program.program_items}
-                                    itemTypes={['speaker', 'musical_number', 'program_other']}
+                                    itemTypes={['speaker', 'intermediate_hymn', 'musical_number', 'program_other']}
                                     addType={'program_new'}
                                     currentUser={this.props.currentUser}
                                     handleToUpdate={this.handleProgramItemsUpdate.bind(this)}

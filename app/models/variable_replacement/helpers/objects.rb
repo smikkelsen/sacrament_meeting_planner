@@ -49,19 +49,31 @@ module VariableReplacement
         val
       end
 
+      def transform_program_items(program_items)
+        program_items.each do |pi|
+          if pi.item_type == 'intermediate_hymn'
+            hymn = program.intermediate_hymn
+            pi.key = hymn ? "##{hymn&.page} - #{hymn.name}" : 'Not Set'
+          end
+        end
+        program_items
+      end
+
       def all_program_items
         return @all_program_items if @all_program_items
         @all_program_items = @args[:all_program_items]
         @all_program_items ||= program.program_items.order(:created_at).to_a rescue nil
         @all_program_items ||= []
+        @all_program_items = transform_program_items(@all_program_items)
         @all_program_items
       end
 
       def program_items
         return @program_items if @program_items
         @program_items = @args[:program_items]
-        @program_items ||= program.program_items.where(item_type: %w(speaker musical_number program_other)).order(:created_at).to_a rescue nil
+        @program_items ||= program.program_items.where(item_type: %w(speaker intermediate_hymn musical_number program_other)).order(:created_at).to_a rescue nil
         @program_items ||= []
+        @program_items = transform_program_items(@program_items)
         @program_items
       end
 
@@ -71,6 +83,7 @@ module VariableReplacement
         items = @args[item_type.to_sym]
         items ||= program&.program_items.where(item_type: item_type.singularize).to_a rescue nil
         items ||= []
+        items = transform_program_items(items)
         instance_variable_set("@#{item_type}", items)
         items
       end

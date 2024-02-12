@@ -67,9 +67,23 @@ class ProgramItemForm extends React.Component {
         this.handleProgramItemChange(id, '_destroy', true)
     }
 
-    handleProgramItemChange(id, key, value) {
-        let newItems = this.state.programItems.map(item => (
-            item.id === id ? Object.assign({}, item, {[key]: value}) : item));
+    handleProgramItemTypeChange(id, itemType) {
+        if(itemType === "intermediate_hymn") {
+            this.handleProgramItemChange(id, 'key', '0', 'item_type', itemType)
+        } else {
+            this.handleProgramItemChange(id, 'item_type', itemType)
+        }
+    }
+
+    // (id, key1, value1, [key2, value2, ...])
+    handleProgramItemChange() {
+        let id = arguments[0]
+        let newItems = this.state.programItems;
+        for (var i = 1; i < arguments.length; i += 2) {
+            newItems = newItems.map(item => (
+                item.id === id ? Object.assign({}, item, {[arguments[i]]: arguments[i+1]}) : item));
+        }
+
         this.props.handleToUpdate(newItems);
         this.setState({
             programItems: newItems
@@ -78,6 +92,25 @@ class ProgramItemForm extends React.Component {
 
     singleType() {
         return (this.props.itemTypes.length === 1);
+    }
+
+    renderNoBox(item, index, heading, value) {
+        return (
+            <Row className={'input-row'} key={index}>
+                {this.singleType() ? '' : <h6>{heading}</h6>}
+                <Col sm={12}>
+                    <InputGroup>
+                        <Form.Control
+                            id={`programItems[${index}].key`}
+                            value={value}
+                            disabled={true}/>
+                        <Button onClick={(_e) => this.removeProgramItemFromForm(item.id)}
+                                disabled={!hasRole('bishopric', this.props.currentUser.role)}
+                                variant={'danger'}><Trash3Fill/></Button>
+                    </InputGroup>
+                </Col>
+            </Row>
+        )
     }
 
     renderOneBox(item, index, heading, label) {
@@ -139,7 +172,7 @@ class ProgramItemForm extends React.Component {
                     <InputGroup>
                         <Form.Select
                             id={`programItems.${this.props.addType}[${index}].item_type`}
-                            onChange={(e) => this.handleProgramItemChange(item.id, 'item_type', e.target.value)}
+                            onChange={(e) => this.handleProgramItemTypeChange(item.id, e.target.value)}
                             value={this.renderInputValue(item.id, 'item_type')}>
                             <option value={this.props.addType}>Choose Type</option>
                             {this.props.itemTypes.map((type, index) => (
@@ -279,6 +312,7 @@ class ProgramItemForm extends React.Component {
 
     render() {
         let itemInputs = [];
+        let text = '';
         this.state.programItems.forEach((item, index) => {
             if (!this.props.itemTypes.concat(this.props.addType).includes(item.item_type)) {
                 return;
@@ -290,6 +324,9 @@ class ProgramItemForm extends React.Component {
             switch (item.item_type) {
                 case 'speaker':
                     itemInputs.push(this.renderTwoBox(item, index, 'Speaker', 'Speaker', 'Topic'));
+                    break;
+                case 'intermediate_hymn':
+                    itemInputs.push(this.renderNoBox(item, index, 'Intermediate Hymn', this.props.intermediateHymnText));
                     break;
                 case 'musical_number':
                     itemInputs.push(this.renderOneBox(item, index, 'Musical Number', 'Title'));
