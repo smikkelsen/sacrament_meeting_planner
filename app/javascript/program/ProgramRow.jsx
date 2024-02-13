@@ -73,7 +73,10 @@ class ProgramRow extends React.Component {
     }
 
     handleProgramFormUpdate(program) {
-        this.setState({program: program})
+        // Only update if form dirty, or it my overwrite with unpersisted ID's
+        if(this.state.dirty) {
+            this.setState({program: program})
+        }
     }
 
     handleProgramFormDirty(dirty) {
