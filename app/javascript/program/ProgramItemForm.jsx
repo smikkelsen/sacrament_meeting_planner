@@ -24,6 +24,7 @@ class ProgramItemForm extends React.Component {
             programItems: this.props.programItems,
             showTrelloModal: false,
             importingTrello: false,
+            draggingItem: null,
             trelloItems: [],
             trelloItemValues: []
         };
@@ -96,7 +97,17 @@ class ProgramItemForm extends React.Component {
 
     renderNoBox(item, index, heading, value) {
         return (
-            <Row className={'input-row'} key={index}>
+            <Row key={index}
+                 className=
+                     {`input-row item ${item === this.state.draggingItem ?
+                         'dragging' : ''
+                     }`}
+                 draggable={true}
+                 onDragStart={(e) => this.handleDragStart(e, item)}
+                 onDragEnd={this.handleDragEnd}
+                 onDragOver={this.handleDragOver}
+                 onDrop={(e) => this.handleDrop(e, item)}
+            >
                 {this.singleType() ? '' : <h6>{heading}</h6>}
                 <Col sm={12}>
                     <InputGroup>
@@ -115,7 +126,17 @@ class ProgramItemForm extends React.Component {
 
     renderOneBox(item, index, heading, label) {
         return (
-            <Row className={'input-row'} key={index}>
+            <Row key={index}
+                 className=
+                     {`input-row item ${item === this.state.draggingItem ?
+                         'dragging' : ''
+                     }`}
+                 draggable={true}
+                 onDragStart={(e) => this.handleDragStart(e, item)}
+                 onDragEnd={this.handleDragEnd}
+                 onDragOver={this.handleDragOver}
+                 onDrop={(e) => this.handleDrop(e, item)}
+            >
                 {this.singleType() ? '' : <h6>{heading}</h6>}
                 <Col sm={12}>
                     <InputGroup>
@@ -136,7 +157,17 @@ class ProgramItemForm extends React.Component {
 
     renderTwoBox(item, index, heading, label1, label2) {
         return (
-            <Row className={'input-row'} key={index}>
+            <Row key={index}
+                 className=
+                     {`input-row item ${item === this.state.draggingItem ?
+                         'dragging' : ''
+                     }`}
+                 draggable={true}
+                 onDragStart={(e) => this.handleDragStart(e, item)}
+                 onDragEnd={this.handleDragEnd}
+                 onDragOver={this.handleDragOver}
+                 onDrop={(e) => this.handleDrop(e, item)}
+            >
                 {this.singleType() ? '' : <h6>{heading}</h6>}
                 <Col md={6} sm={12}>
                     <InputGroup>
@@ -309,6 +340,37 @@ class ProgramItemForm extends React.Component {
             )
         }
     }
+
+    handleDragStart = (e, item) => {
+        this.setState({ draggingItem: item });
+        e.dataTransfer.setData('text/plain', '');
+    };
+
+    handleDragEnd = () => {
+        this.setState({ draggingItem: null });
+    };
+
+    handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    handleDrop = (e, targetItem) => {
+        const { draggingItem, programItems } = this.state;
+        if (!draggingItem) return;
+
+        const currentIndex = programItems.indexOf(draggingItem);
+        const targetIndex = programItems.indexOf(targetItem);
+
+        if (currentIndex !== -1 && targetIndex !== -1) {
+            programItems.splice(currentIndex, 1);
+            programItems.splice(targetIndex, 0, draggingItem);
+            programItems.forEach((item, index) => {
+                item['position'] = index
+            });
+            this.props.handleToUpdate(programItems);
+            this.setState({ programItems });
+        }
+    };
 
     render() {
         let itemInputs = [];

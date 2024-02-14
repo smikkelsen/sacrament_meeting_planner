@@ -71,5 +71,6 @@
     json.item_type pi.item_type
     json.key pi.key
     json.value pi.value
+    json.position pi.position
   end
 

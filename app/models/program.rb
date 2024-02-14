@@ -2,7 +2,7 @@ class Program < ApplicationRecord
 
   enum meeting_type: { standard: 0, fast_sunday: 1, ward_conference: 2, stake_conference: 3, general_conference: 4 }
 
-  has_many :program_items, dependent: :destroy
+  has_many :program_items, -> { order(:position) }, dependent: :destroy
   accepts_nested_attributes_for :program_items, allow_destroy: true, reject_if: proc { |attributes| attributes['key'].blank? }
 
   belongs_to :conducting, class_name: 'User', optional: true

@@ -8,7 +8,7 @@ module Api
                            .eager_load(:presiding, :conducting, :prep, :chorister, :organist, :opening_hymn,
                                        :sacrament_hymn, :intermediate_hymn, :closing_hymn)
                            .order(date: params[:date_order] || :asc)
-                           .order(ProgramItem.arel_table[:created_at].asc)
+                           .order(ProgramItem.arel_table[:position].asc)
 
         if params[:search_value]
           case params[:search_type]
@@ -78,7 +78,7 @@ module Api
               .permit(:meeting_type, :date, :presiding_id, :conducting_id, :prep_id, :chorister_id,
                       :organist_id, :opening_hymn_id, :intermediate_hymn_id, :sacrament_hymn_id, :closing_hymn_id,
                       :opening_prayer, :closing_prayer, :notes, :published,
-                      program_items_attributes: [:id, :key, :value, :item_type, :program_id, :_destroy])
+                      program_items_attributes: [:id, :key, :value, :item_type, :program_id, :position, :_destroy])
       end
 
       def bulk_edit_params

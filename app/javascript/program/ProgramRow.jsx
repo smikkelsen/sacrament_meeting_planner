@@ -285,7 +285,7 @@ class ProgramRow extends React.Component {
     }
 
     renderFormSubmitButton() {
-        return (this.state.dirty ? <Button variant={"success"} onClick={(e) => this.submitForm(e)}>Save</Button> : '')
+        return (this.state.dirty ? <Button variant={"success"} className={'me-2'} onClick={(e) => this.submitForm(e)}>Save</Button> : '')
     }
 
     dateFormatStr() {
