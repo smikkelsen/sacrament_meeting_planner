@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'pages#dashboard', as: :dashboard_page
     get 'reports', to: 'pages#reports', as: :reports_page
     get 'users', to: 'pages#users', as: :users_page
+    get 'bulletin', to: 'pages#bulletin', as: :bulletin_page
 
     get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
 
@@ -35,6 +36,9 @@ Rails.application.routes.draw do
         get '/users/current', to: 'users#current'
         get '/users/user_roles', to: 'users#user_roles', as: :user_roles
         resources :users, only: [:index, :show, :update]
+        get '/bulletin_items/item_types', to: 'bulletin_items#item_types'
+        resources :bulletin_items, only: [:index, :show, :update, :create, :destroy]
+        post '/bulletin_items/update_positions', to: 'bulletin_items#update_positions'
         get '/trello/list_cards/:list_type', to: 'trello#list_cards'
       end
     end

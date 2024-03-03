@@ -61,7 +61,7 @@ module Api
 
       def template_params
         params.require(:template).permit(
-          :name, :body, :template_type, pdf_settings: {}
+          :name, :body, :template_type, :scripts, :styles, pdf_settings: {}
         )
       end
     end

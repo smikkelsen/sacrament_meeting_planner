@@ -49,7 +49,7 @@ class Program < ApplicationRecord
 
   def template_replacement(template_id)
     template = Template.find(template_id)
-    v = VariableReplacement::ConductingTemplateVariables.new(program: self)
+    v = "VariableReplacement::#{template.template_type.capitalize}TemplateVariables".constantize.new(program: self)
     v.prep_query_string(template.body)
   end
 end

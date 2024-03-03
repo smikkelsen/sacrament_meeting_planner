@@ -5,6 +5,7 @@ module VariableReplacement
       DELEGATE_HYMNS = %w[opening_hymn intermediate_hymn sacrament_hymn closing_hymn]
       DELEGATE_USERS = %w[presiding conducting prep chorister organist]
       DELEGATE_ITEM_TYPES = %w[speakers musical_numbers program_others releases sustainings announcements business]
+      DELEGATE_BULLETIN_ITEM_TYPES = BulletinItem.item_types.keys.map {|i| "#{i}_bulletin_items"}
 
       def program
         return @program if @program
@@ -28,6 +29,12 @@ module VariableReplacement
       DELEGATE_ITEM_TYPES.each do |item_type|
         define_method(item_type) do
           meta_program_items(item_type)
+        end
+      end
+
+      DELEGATE_BULLETIN_ITEM_TYPES.each do |item_type|
+        define_method(item_type) do
+          meta_bulletin_items(item_type)
         end
       end
 
@@ -77,6 +84,14 @@ module VariableReplacement
         @program_items
       end
 
+      def bulletin_items
+        return @bulletin_items if @bulletin_items
+        @bulletin_items = @args[:bulletin_items]
+        @bulletin_items ||= BulletinItem.order(:position).to_a rescue nil
+        @bulletin_items ||= []
+        @bulletin_items
+      end
+
       def meta_program_items(item_type)
         items = instance_variable_get("@#{item_type}")
         return items if items
@@ -84,6 +99,16 @@ module VariableReplacement
         items ||= program&.program_items.where(item_type: item_type.singularize).to_a rescue nil
         items ||= []
         items = transform_program_items(items)
+        instance_variable_set("@#{item_type}", items)
+        items
+      end
+
+      def meta_bulletin_items(item_type)
+        items = instance_variable_get("@#{item_type}")
+        return items if items
+        items = @args[item_type.to_sym]
+        items ||= BulletinItem.where(item_type: item_type.gsub('_bulletin_items', '')).to_a rescue nil
+        items ||= []
         instance_variable_set("@#{item_type}", items)
         items
       end

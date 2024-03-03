@@ -4,6 +4,7 @@
 @import 'program';
 @import 'template';
 @import 'index_views';
+@import "react-datetime/css/react-datetime.css";
 
 
 body {
@@ -48,11 +49,11 @@ a:hover {
 }
 
 .top-modal-backdrop {
-    z-index: 1100 !important;
+  z-index: 1100 !important;
 }
 
 .top-modal {
-    z-index: 1101 !important;
+  z-index: 1101 !important;
 }
 
 .red {
@@ -61,4 +62,13 @@ a:hover {
 
 .green {
   color: green;
+}
+
+.float-right {
+  float: right;
+}
+
+.lg-textarea {
+  width: 100%;
+  height: 300px;
 }

@@ -29,10 +29,13 @@ class ProgramsController < ApplicationController
 
   def public
     @program = Program.next
-    setting = AccountSetting.find_by_name('public_template_id')
-    @template = Template.find(setting.value) if setting
+    if @program
+      setting = AccountSetting.find_by_name("public_template_#{@program.meeting_type}_id")
+      setting ||= AccountSetting.find_by_name("public_template_id")
+      @template = Template.find(setting.value) if setting
+    end
     if @program&.published && @template
-      render 'programs/generate_template', layout: false
+      render 'programs/generate_template', layout: 'public_plain'
     else
       render 'programs/not_available', layout: 'public'
     end

@@ -8,6 +8,9 @@ class PagesController < ApplicationController
   def users
   end
 
+  def bulletin
+  end
+
   def hymns
   end
 

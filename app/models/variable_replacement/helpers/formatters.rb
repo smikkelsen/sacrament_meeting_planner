@@ -2,7 +2,7 @@ module VariableReplacement
   module Helpers
     module Formatters
       include ActionView::Helpers::NumberHelper
-      STRING_METHODS = %w(humanize capitalize downcase underscore upcase)
+      STRING_METHODS = %w(humanize capitalize downcase underscore upcase titleize)
 
       def day(date)
         if time.is_a? String

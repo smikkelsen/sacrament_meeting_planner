@@ -31,6 +31,13 @@ export const fetchUsers = () => {
     )
 }
 
+export const fetchBulletinItems = () => {
+    return (
+        fetch("/api/v1/bulletin_items")
+            .then(res => res.json())
+    )
+}
+
 export const fetchUserRoles = () => {
     return (
         fetch("/api/v1/users/user_roles")
@@ -133,6 +140,78 @@ export const updateUser = (userId, payload) => {
             },
             body: JSON.stringify(payload)
         })
+            .then(res => res.json())
+    )
+}
+
+export const updateBulletinItem = (itemId, payload) => {
+    let url = `/api/v1/bulletin_items/${itemId}`
+    let method = "PUT"
+    return (
+        fetch(url, {
+            method: method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+    )
+}
+
+export const createBulletinItem = (payload) => {
+    let url = '/api/v1/bulletin_items'
+    let method = "POST"
+    return (
+        fetch(url, {
+            method: method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+    )
+}
+
+export const updateBulletinItemPositions = (payload) => {
+    let url = '/api/v1/bulletin_items/update_positions'
+    let method = "POST"
+    return (
+        fetch(url, {
+            method: method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({bulletin_items: payload})
+        })
+            .then(res => res.json())
+    )
+}
+
+export const destroyBulletinItem = (bulletinItemId) => {
+    return (
+        fetch(`/api/v1/bulletin_items/${bulletinItemId}`,
+            {method: 'delete',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            })
+            .then(res => res.json())
+    )
+}
+
+export const fetchBulletinItemTypes = () => {
+    return (
+        fetch(`/api/v1/bulletin_items/item_types`)
             .then(res => res.json())
     )
 }

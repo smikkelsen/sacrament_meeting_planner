@@ -21,6 +21,7 @@ class Ability
       can [:read, :update, :edit], Template
       can [:read, :update, :edit], Hymn
       can [:read, :update, :edit], User
+      can [:read, :update, :edit], BulletinItem
       can [:read], :reports
     when 'bishopric'
       can [:read, :show, :update, :edit], Program
@@ -29,6 +30,7 @@ class Ability
       can [:read, :update, :edit], Hymn
       can [:list_cards, :board_lists], Trello
       can [:read, :update, :edit], User
+      can [:read, :update, :edit, :destroy], BulletinItem
       can [:read], :reports
     when 'bishop'
       can [:read, :update, :edit], Program
@@ -36,10 +38,10 @@ class Ability
       can [:read, :update, :edit], Hymn
       can [:list_cards, :board_lists], Trello
       can [:read, :update, :edit], User
+      can [:read, :update, :edit, :destroy], BulletinItem
       can [:read], :reports
     when 'admin'
       can :manage, :all
-      can :manage, User
     end
   end
 end

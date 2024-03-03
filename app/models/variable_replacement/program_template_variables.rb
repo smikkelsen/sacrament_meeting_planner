@@ -11,12 +11,14 @@ class VariableReplacement::ProgramTemplateVariables < VariableReplacement::Base
     query
   end
 
+  def self.system_vars
+    vars = super
+    vars = vars.reject {|v| v[:name].in? %w[Notes]}
+  end
   # Override to provide smaller subset to program
-  def nested_objects
-    vars = Array.new
-    vars << { obj: 'speakers', attributes: %w[id key value item_type] }
-    vars << { obj: 'musical_numbers', attributes: %w[id key value item_type] }
-    vars << { obj: 'program_others', attributes: %w[id key value item_type] }
+  def self.collection_objects
+    vars = super
+    vars = vars.reject {|v| v[:obj].in? %w[releases sustainings business] }
     vars
   end
 end

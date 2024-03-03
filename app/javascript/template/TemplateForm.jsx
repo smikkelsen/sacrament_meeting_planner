@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Button, Form, Row, Col} from 'react-bootstrap'
+import {Card, Button, Form, Row, Col, Modal} from 'react-bootstrap'
 import {FloatingLabel} from "react-bootstrap";
 import _ from "lodash";
 import {Editor} from '@tinymce/tinymce-react';
@@ -22,7 +22,9 @@ class TemplateForm extends React.Component {
         this.state = {
             dirty: false,
             template: this.props.template,
-            templateVars: {}
+            templateVars: {} ,
+            editAttr: null,
+            showModal: true
         };
     }
 
@@ -70,6 +72,13 @@ class TemplateForm extends React.Component {
         this.props.handleToUpdate(null)  // set template to null in parent component
     }
 
+    handleHeadEdit(attr) {
+        this.setState({
+            editAttr: attr,
+            showModal: true
+        })
+    }
+
     handleDirty(e) {
         this.setState({
             dirty: true
@@ -88,7 +97,6 @@ class TemplateForm extends React.Component {
 
     handlePdfInputChange(e) {
         let attrName = e.target.id.replace('pdf_', '')
-        console.log(`updating ${attrName}`)
         this.setState(prevState => {
             return {
                 dirty: true,
@@ -214,6 +222,40 @@ class TemplateForm extends React.Component {
         )
     }
 
+    renderEditModal() {
+        const {editAttr} = this.state;
+        if (editAttr) {
+            return (
+                <Modal
+                    show={this.state.showModal}
+                    onHide={() => this.setState({showModal: false, editAttr: null})}
+                    size="lg"
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            Edit {editAttr}
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Row className={'input-row'}>
+                                <Col sm={12}>
+                                     <textarea
+                                         id={editAttr}
+                                         className={'lg-textarea'}
+                                         value={this.renderInputValue(editAttr)}
+                                         onChange={(e) => this.handleInputChange(e)}
+                                     />
+
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            )
+        }
+    }
+
     render() {
         return (
             <Form>
@@ -320,6 +362,34 @@ class TemplateForm extends React.Component {
                         </Card.Body>
                     </Card>
                 </Col>
+
+                <Col sm={12}>
+                    <Card className={'mt-3'}>
+                        <Card.Body>
+                            <Card.Title>
+                                Document Head
+                            </Card.Title>
+                            <Row>
+                                <Col sm={12}>
+                                    {this.renderEditModal()}
+                                    <Button variant={'outline-secondary'}
+                                            size={'sm'}
+                                            className={'me-2'}
+                                            onClick={(_e) => this.handleHeadEdit('styles')}>
+                                        Edit Styles
+                                    </Button>
+                                    <Button variant={'outline-secondary'}
+                                            size={'sm'}
+                                            className={'me-2'}
+                                            onClick={(_e) => this.handleHeadEdit('scripts')}>
+                                        Edit Scripts
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
                 <Col sm={12} className={'tinymce-wrapper'}>
                     {this.renderEditor()}
 

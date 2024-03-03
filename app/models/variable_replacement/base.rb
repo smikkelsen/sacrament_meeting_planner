@@ -4,6 +4,7 @@ class VariableReplacement::Base
 
   def self.system_vars
     [
+      { name: 'MeetingType', display_name: 'Meeting Type', col_name: 'meeting_type', obj: 'program', group: 'Program' },
       { name: 'OpeningPrayer', display_name: 'Opening Prayer', col_name: 'opening_prayer', obj: 'program', group: 'Program' },
       { name: 'ClosingPrayer', display_name: 'Closing Prayer', col_name: 'closing_prayer', obj: 'program', group: 'Program' },
       { name: 'Notes', display_name: 'Notes', col_name: 'notes', obj: 'program', group: 'Program' },
@@ -13,6 +14,7 @@ class VariableReplacement::Base
 
   def self.collection_objects
     program_items_attributes = %w[id key value item_type]
+    bulletin_items_attributes = %w[item_type message date time position]
     vars = Array.new
     vars << {display_name: 'All Program Items', obj: 'all_program_items', attributes: program_items_attributes }
     vars << {display_name: 'Base Program Items', obj: 'program_items', attributes: program_items_attributes }
@@ -23,6 +25,10 @@ class VariableReplacement::Base
     vars << {display_name: 'Releases', obj: 'releases', attributes: program_items_attributes }
     vars << {display_name: 'Sustainings', obj: 'sustainings', attributes: program_items_attributes }
     vars << {display_name: 'Business', obj: 'business', attributes: program_items_attributes }
+    vars << {display_name: 'BulletinItems', obj: 'bulletin_items', attributes: bulletin_items_attributes }
+    vars << {display_name: 'WardBulletinItems', obj: 'ward_bulletin_items', attributes: bulletin_items_attributes }
+    vars << {display_name: 'EldersQuorumBulletinItems', obj: 'elders_quorum_bulletin_items', attributes: bulletin_items_attributes }
+    vars << {display_name: 'ReliefSocietyBulletinItems', obj: 'relief_society_bulletin_items', attributes: bulletin_items_attributes }
     vars
   end
 

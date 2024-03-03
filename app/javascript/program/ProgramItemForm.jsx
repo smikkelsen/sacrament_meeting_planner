@@ -55,6 +55,7 @@ class ProgramItemForm extends React.Component {
                 item_type: this.props.addType,
                 key: item.key,
                 value: item.value,
+                position: this.state.programItems.length + 1,
                 program_id: this.props.programId
             })
         })
