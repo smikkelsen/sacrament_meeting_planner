@@ -5,6 +5,12 @@ Rails.application.routes.draw do
     get 'program', to: 'programs#public', as: :public_program
   end
 
+  constraints(BulletinConstraint) do
+    root to: 'bulletins#public', as: :bulletin_public_root
+    get 'bulletin', to: 'bulletins#public', as: :public_bulletin
+    get 'bulletin/:item_type', to: 'bulletins#public'
+  end
+
   constraints(AdminConstraint) do
 
     root to: 'pages#programs'
@@ -21,7 +27,7 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'pages#dashboard', as: :dashboard_page
     get 'reports', to: 'pages#reports', as: :reports_page
     get 'users', to: 'pages#users', as: :users_page
-    get 'bulletin', to: 'pages#bulletin', as: :bulletin_page
+    get 'bulletin_items', to: 'pages#bulletin', as: :bulletin_page
 
     get '/programs/:id/templates/:template_id/generate', to: 'programs#generate_template', as: :generate_program_template_page
 

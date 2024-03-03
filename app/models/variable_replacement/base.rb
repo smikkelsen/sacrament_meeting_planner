@@ -16,19 +16,19 @@ class VariableReplacement::Base
     program_items_attributes = %w[id key value item_type]
     bulletin_items_attributes = %w[item_type message date time position]
     vars = Array.new
-    vars << {display_name: 'All Program Items', obj: 'all_program_items', attributes: program_items_attributes }
-    vars << {display_name: 'Base Program Items', obj: 'program_items', attributes: program_items_attributes }
-    vars << {display_name: 'Speakers', obj: 'speakers', attributes: program_items_attributes }
-    vars << {display_name: 'Musical Numbers', obj: 'musical_numbers', attributes: program_items_attributes }
-    vars << {display_name: 'Program Others', obj: 'program_others', attributes: program_items_attributes }
-    vars << {display_name: 'Announcements', obj: 'announcements', attributes: program_items_attributes }
-    vars << {display_name: 'Releases', obj: 'releases', attributes: program_items_attributes }
-    vars << {display_name: 'Sustainings', obj: 'sustainings', attributes: program_items_attributes }
-    vars << {display_name: 'Business', obj: 'business', attributes: program_items_attributes }
-    vars << {display_name: 'BulletinItems', obj: 'bulletin_items', attributes: bulletin_items_attributes }
-    vars << {display_name: 'WardBulletinItems', obj: 'ward_bulletin_items', attributes: bulletin_items_attributes }
-    vars << {display_name: 'EldersQuorumBulletinItems', obj: 'elders_quorum_bulletin_items', attributes: bulletin_items_attributes }
-    vars << {display_name: 'ReliefSocietyBulletinItems', obj: 'relief_society_bulletin_items', attributes: bulletin_items_attributes }
+    vars << { display_name: 'All Program Items', obj: 'all_program_items', attributes: program_items_attributes }
+    vars << { display_name: 'Base Program Items', obj: 'program_items', attributes: program_items_attributes }
+    vars << { display_name: 'Speakers', obj: 'speakers', attributes: program_items_attributes }
+    vars << { display_name: 'Musical Numbers', obj: 'musical_numbers', attributes: program_items_attributes }
+    vars << { display_name: 'Program Others', obj: 'program_others', attributes: program_items_attributes }
+    vars << { display_name: 'Announcements', obj: 'announcements', attributes: program_items_attributes }
+    vars << { display_name: 'Releases', obj: 'releases', attributes: program_items_attributes }
+    vars << { display_name: 'Sustainings', obj: 'sustainings', attributes: program_items_attributes }
+    vars << { display_name: 'Business', obj: 'business', attributes: program_items_attributes }
+    vars << { display_name: 'BulletinItems', obj: 'bulletin_items', attributes: bulletin_items_attributes }
+    vars << { display_name: 'WardBulletinItems', obj: 'ward_bulletin_items', attributes: bulletin_items_attributes }
+    vars << { display_name: 'EldersQuorumBulletinItems', obj: 'elders_quorum_bulletin_items', attributes: bulletin_items_attributes }
+    vars << { display_name: 'ReliefSocietyBulletinItems', obj: 'relief_society_bulletin_items', attributes: bulletin_items_attributes }
     vars
   end
 
@@ -36,15 +36,15 @@ class VariableReplacement::Base
     user_attributes = %w[id first_name last_name full_name email]
     hymn_attributes = %w[id name page category]
     vars = Array.new
-    vars << {display_name: 'Presiding', obj: 'presiding', attributes: user_attributes }
-    vars << {display_name: 'Conducting', obj: 'conducting', attributes: user_attributes }
-    vars << {display_name: 'Sacrament Prep', obj: 'prep', attributes: user_attributes }
-    vars << {display_name: 'Chorister', obj: 'chorister', attributes: user_attributes }
-    vars << {display_name: 'Organist', obj: 'organist', attributes: user_attributes }
-    vars << {display_name: 'Opening Hymn', obj: 'opening_hymn', attributes: hymn_attributes }
-    vars << {display_name: 'Sacrament Hymn', obj: 'sacrament_hymn', attributes: hymn_attributes }
-    vars << {display_name: 'Intermediate Hymn', obj: 'intermediate_hymn', attributes: hymn_attributes }
-    vars << {display_name: 'Closing Hymn', obj: 'closing_hymn', attributes: hymn_attributes }
+    vars << { display_name: 'Presiding', obj: 'presiding', attributes: user_attributes }
+    vars << { display_name: 'Conducting', obj: 'conducting', attributes: user_attributes }
+    vars << { display_name: 'Sacrament Prep', obj: 'prep', attributes: user_attributes }
+    vars << { display_name: 'Chorister', obj: 'chorister', attributes: user_attributes }
+    vars << { display_name: 'Organist', obj: 'organist', attributes: user_attributes }
+    vars << { display_name: 'Opening Hymn', obj: 'opening_hymn', attributes: hymn_attributes }
+    vars << { display_name: 'Sacrament Hymn', obj: 'sacrament_hymn', attributes: hymn_attributes }
+    vars << { display_name: 'Intermediate Hymn', obj: 'intermediate_hymn', attributes: hymn_attributes }
+    vars << { display_name: 'Closing Hymn', obj: 'closing_hymn', attributes: hymn_attributes }
     vars
   end
 
