@@ -6,44 +6,44 @@ module VariableReplacement
 
       def day(date)
         if time.is_a? String
-          date = Date.parse(date)
+          date = Date.parse(date).in_time_zone(timezone)
         end
-        date.strftime("%D")
+        date.in_time_zone(timezone).strftime("%D")
       rescue
         ''
       end
 
       def mm_dd_y(date)
         if date.is_a? String
-          date = Date.parse(date)
+          date = Date.parse(date).in_time_zone(timezone)
         end
-        date.strftime("%m-d-y")
+        date.in_time_zone(timezone).strftime("%m-d-y")
       rescue
         ''
       end
 
       def humanized_date(date)
         if date.is_a? String
-          date = Date.parse(date)
+          date = Date.parse(date).in_time_zone(timezone)
         end
-        date.strftime("%b #{date.day.ordinalize}, %Y")
+        date.in_time_zone(timezone).strftime("%b #{date.day.ordinalize}, %Y")
       end
 
       def time(time)
         if time.is_a? String
-          time = Time.parse(time)
+          time = Time.parse(time).in_time_zone(timezone)
         end
-        time.strftime("%I:%M %p")
+        time.in_time_zone(timezone).strftime("%I:%M %p")
       rescue
         ''
       end
 
       def date_time(str)
         if str.is_a? String
-          date = Time.parse(str)
+          date = Time.parse(str).in_time_zone(timezone)
           date.strftime("%m/%d/%y %I:%M %p")
         else
-          str.strftime("%m/%d/%y %I:%M %p")
+          str.in_time_zone(timezone).strftime("%m/%d/%y %I:%M %p")
         end
       rescue
         ''
@@ -53,6 +53,11 @@ module VariableReplacement
         define_method(method_name) do |str|
           str.send(method_name)
         end
+      end
+
+      private
+      def timezone
+        AccountSetting.find_by_name('timezone') || 'UTC'
       end
     end
   end

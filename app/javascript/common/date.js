@@ -3,7 +3,7 @@ import {format, utcToZonedTime} from "date-fns-tz";
 export const formatDateString = (str, pattern = 'MMM do yyyy h:mm aaa', nullStr = 'Never') => {
     if (str) {
         const isoDate = Date.parse(str)
-        const timeZone = 'UTC'
+        const timeZone = 'America/Denver'
         return format(utcToZonedTime(isoDate, timeZone), pattern);
     } else {
         return nullStr;
