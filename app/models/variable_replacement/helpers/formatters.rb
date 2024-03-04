@@ -5,8 +5,9 @@ module VariableReplacement
       STRING_METHODS = %w(humanize capitalize downcase underscore upcase titleize)
 
       def day(date)
+        return date if date.blank?
         if time.is_a? String
-          date = Date.parse(date).in_time_zone(timezone)
+          date = Date.parse(date)
         end
         date.in_time_zone(timezone).strftime("%D")
       rescue
@@ -14,8 +15,9 @@ module VariableReplacement
       end
 
       def mm_dd_y(date)
+        return date if date.blank?
         if date.is_a? String
-          date = Date.parse(date).in_time_zone(timezone)
+          date = Date.parse(date)
         end
         date.in_time_zone(timezone).strftime("%m-d-y")
       rescue
@@ -23,15 +25,18 @@ module VariableReplacement
       end
 
       def humanized_date(date)
+        return date if date.blank?
         if date.is_a? String
-          date = Date.parse(date).in_time_zone(timezone)
+          date = Date.parse(date)
         end
         date.in_time_zone(timezone).strftime("%b #{date.day.ordinalize}, %Y")
+        rescue ''
       end
 
       def time(time)
+        return time if time.blank?
         if time.is_a? String
-          time = Time.parse(time).in_time_zone(timezone)
+          time = Time.parse(time)
         end
         time.in_time_zone(timezone).strftime("%I:%M %p")
       rescue
@@ -39,6 +44,7 @@ module VariableReplacement
       end
 
       def date_time(str)
+        return str if str.blank?
         if str.is_a? String
           date = Time.parse(str).in_time_zone(timezone)
           date.strftime("%m/%d/%y %I:%M %p")
@@ -57,7 +63,7 @@ module VariableReplacement
 
       private
       def timezone
-        AccountSetting.find_by_name('timezone') || 'UTC'
+        AccountSetting.find_by_name('timezone')&.value || 'UTC'
       end
     end
   end
