@@ -37,11 +37,11 @@ module Api
                 when 'program'
                   VariableReplacement::ProgramTemplateVariables
                 end
-        system_vars = klass.system_vars.map { |a| { group: a[:group], name: a[:display_name], value: "{!#{a[:name]}}" } }
+        system_vars = klass.system_vars.map { |a| { group: a[:group], name: a[:display_name], value: "{!#{a[:name]}!}" } }
                            .group_by { |h| h[:group] }
-        nested_object_vars = klass.nested_objects.map { |a| a[:attributes].map { |b| { group: a[:display_name], name: b.humanize, value: "{!#{a[:obj]}[#{b}]}" } } }.flatten.group_by { |h| h[:group] }
-        collection_objects = klass.collection_objects.map { |a| { name: a[:display_name], value: "{!!#{a[:obj]}}<br><br>{!!end}" } }
-        collection_vars = klass.collection_objects.map { |a| a[:attributes].map { |b| { group: a[:display_name], name: b.humanize, value: "{!#{b}}" } } }.flatten
+        nested_object_vars = klass.nested_objects.map { |a| a[:attributes].map { |b| { group: a[:display_name], name: b.humanize, value: "{!#{a[:name]} attr=\"#{b}\"!}" } } }.flatten.group_by { |h| h[:group] }
+        collection_objects = klass.collection_objects.map { |a| { name: a[:display_name], value: "{!#{a[:name]}}<br><br>{#{a[:name]}!}" } }
+        collection_vars = klass.collection_objects.map { |a| a[:attributes].map { |b| { group: a[:display_name], name: b.humanize, value: "{!#{b}!}" } } }.flatten
                                .group_by { |h| h[:group] }
         other_vars = {
           "Other" => [{ name: "If Present", value: "{!!if_present}<br><br>{!!end_if_present}" }],
