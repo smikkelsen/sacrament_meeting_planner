@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Table, Row, Col, Form, FloatingLabel} from 'react-bootstrap';
 import {fetchPrograms} from "../common/api";
-import {formatDateString, startOfMonth, endOfMonth, startOfYear, endOfYear} from "../common/date";
+import {formatDateTimeString, startOfMonth, endOfMonth, startOfYear, endOfYear} from "../common/date";
 import _ from "lodash";
 
 class HymnReport extends React.Component {
@@ -130,7 +130,7 @@ class HymnReport extends React.Component {
                     <tbody>
                     {this.state.programs.map(program => (
                         <tr key={program.id}>
-                            <td>{formatDateString(program.date, 'MMM do yyyy')}</td>
+                            <td>{formatDateTimeString(program.date, 'MMM do yyyy')}</td>
                             <td>{program.organist.full_name}</td>
                             <td>{program.chorister.full_name}</td>
                             <td>{this.renderHymnString(program.opening_hymn)}</td>

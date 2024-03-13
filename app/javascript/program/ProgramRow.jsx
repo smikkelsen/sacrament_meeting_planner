@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal, Button, Row, Col, Card, Badge} from 'react-bootstrap';
-import {formatDateString} from '../common/date.js';
+import {formatDateTimeString} from '../common/date.js';
 import {hasRole} from '../common/roles.js';
 import {isMeetingType} from './programHelpers.js';
 import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf, BookmarkStarFill} from 'react-bootstrap-icons';
@@ -172,7 +172,7 @@ class ProgramRow extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {formatDateString(program.date, 'MMM do yyyy')}
+                        {formatDateTimeString(program.date, 'MMM do yyyy')}
                         {this.renderMeetingType(program.meeting_type, ' - ')}
                     </Modal.Title>
                 </Modal.Header>
@@ -204,7 +204,7 @@ class ProgramRow extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Generate Template for {formatDateString(program.date, 'MMM do yyyy')}
+                        Generate Template for {formatDateTimeString(program.date, 'MMM do yyyy')}
                         {this.renderMeetingType(program.meeting_type, ' - ')}
                     </Modal.Title>
                 </Modal.Header>
@@ -290,9 +290,9 @@ class ProgramRow extends React.Component {
 
     dateFormatStr() {
         let date = this.state.program.date;
-        let year = formatDateString(date, 'yyyy');
+        let year = formatDateTimeString(date, 'yyyy');
         let today = new Date().getFullYear();
-        today = formatDateString(today, 'yyyy');
+        today = formatDateTimeString(today, 'yyyy');
         if (_.isEqual(today, year)) {
             return ('MMM do')
         } else {
@@ -432,7 +432,7 @@ class ProgramRow extends React.Component {
                         {this.state.program.is_next ?
                             <span className={'next-bookmark-icon'}><BookmarkStarFill/></span> : ''}
                         <span className={'date me-2'}>
-                            {formatDateString(program.date, this.dateFormatStr())}
+                            {formatDateTimeString(program.date, this.dateFormatStr())}
                         </span>
                         <span className={'meeting-type text-info  me-4 mb-1'}>
                             {this.renderMeetingType(program.meeting_type)}

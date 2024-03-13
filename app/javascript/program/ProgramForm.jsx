@@ -1,7 +1,7 @@
 import React from 'react';
 import {Form, Row, Col, Alert} from "react-bootstrap";
 import {findArrayElementByAttribute, humanize} from '../common/utils.js';
-import {formatDateString} from '../common/date.js';
+import {formatDateTimeString} from '../common/date.js';
 import {hasRole} from '../common/roles.js';
 import {isMeetingType} from './programHelpers.js';
 import {FloatingLabel} from "react-bootstrap";
@@ -90,7 +90,7 @@ class ProgramForm extends React.Component {
                 (result) => {
                     var message = 'this ' + humanize(nestedKey)
                     if (result.programs.length > 0 && result.programs[0].id != hymnId) {
-                        message = message + ' was last used on ' + formatDateString(result.programs[0].date, 'MMM do yyyy')
+                        message = message + ' was last used on ' + formatDateTimeString(result.programs[0].date, 'MMM do yyyy')
                     } else {
                         message = message + ' has never been used'
                     }

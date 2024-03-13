@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Table, Row, Col, Form, FloatingLabel} from 'react-bootstrap';
 import {fetchPrograms} from "../common/api";
-import {formatDateString, startOfMonth, endOfMonth, startOfYear, endOfYear} from "../common/date";
+import {formatDateTimeString, startOfMonth, endOfMonth, startOfYear, endOfYear} from "../common/date";
 
 const _ = require('lodash');
 
@@ -132,7 +132,7 @@ class ProgramSummaryReport extends React.Component {
                     <tbody>
                     {this.state.programs.map(program => (
                         <tr key={program.id}>
-                            <td>{formatDateString(program.date, 'MMM do yyyy')}</td>
+                            <td>{formatDateTimeString(program.date, 'MMM do yyyy')}</td>
                             <td>{_.startCase(program.meeting_type)}</td>
                             <td>
                                 {this.renderProgramItems(program.program_items)}

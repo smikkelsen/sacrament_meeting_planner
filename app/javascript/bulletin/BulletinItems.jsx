@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Modal, Form, Row, Col, Table, FloatingLabel, Card} from 'react-bootstrap';
 import _ from "lodash";
-import {formatDateString} from "../common/date";
+import {formatDateString, formatDateTimeString} from "../common/date";
 import moment from "moment"
 import Datetime from 'react-datetime';
 import {
@@ -301,7 +301,7 @@ class BulletinItems extends React.Component {
                                         onDrop={(e) => this.handleDrop(e, item)}
                                     >
                                         <td>
-                                            {formatDateString(item.date, 'MMM do', '')} {formatDateString(item.time, 'h:mm aaa', '')}
+                                            {formatDateString(item.date, 'MMM do', '')} {formatDateTimeString(item.time, 'h:mm aaa', '')}
                                         </td>
                                         <td>{item.message}</td>
                                         <td>

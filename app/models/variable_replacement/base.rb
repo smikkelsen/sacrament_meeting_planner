@@ -28,7 +28,7 @@ class VariableReplacement::Base
     vars << { name: 'BulletinItems', display_name: 'Bulletin Items', obj: 'bulletin_items', closing_tag: true, attributes: bulletin_items_attributes }
     BulletinItem.item_types.each do |item_type, _v|
       titleized = item_type.titleize
-      vars << { name: "#{titleized.gsub(' ', '')}BulletinItems", display_name: "#{titleized} Bulletin Items", obj: "#{item_type}_bulletin_items", attributes: bulletin_items_attributes }
+      vars << { name: "#{titleized.gsub(' ', '')}BulletinItems", display_name: "#{titleized} Bulletin Items", obj: "#{item_type}_bulletin_items", closing_tag: true, attributes: bulletin_items_attributes }
     end
     vars
   end
@@ -56,36 +56,37 @@ class VariableReplacement::Base
 
   # +query+: the string with {!var_name} to replace
   def prep_query_string(query)
-    raise 'must be called by subclass'
+    query = prep_conditional_block_variables(query)
+    query = collection_table(query)
+    query = prep_iterative_variables(query)
+    query = prep_built_in_variables(query)
+    query = prep_collection_variables(query)
+    query = prep_nested_object_variables(query)
+
+    query
   end
 
-  def parse_query(query, tags, replace_blank: true, closing_tag_body: nil)
+  def parse_query(query, tags, replace_blank: true)
     return '' if query.blank?
+    replaced_query = query
     tags.each do |tag|
       matches = if tag[:closing_tag]
                   query.scan(/\{!#{tag[:name]}(.*?)}(.*?)\{#{tag[:name]}!\}/m)
                 else
-                  query.scan(/\{!#{tag[:name]}(.*?)!\}/m)
+                  query.enum_for(:scan, /\{!#{tag[:name]}(.*?)!\}/m).map { Regexp.last_match.begin(0) }
                 end
 
       matches.each do |match|
-        properties = match[0]
-        body = match[1] if tag[:closing_tag]
+        if tag[:closing_tag]
+          properties = match[0]
+          body = match[1] if tag[:closing_tag]
+        else
+          full_tag = scan_for_closing(query, match)
+          properties = full_tag[(tag[:name].length + 2)..-3]
+        end
+        opts = opts_from_properties(properties)
+        replace_blank = ActiveModel::Type::Boolean.new.cast(opts[:replace_blank]) || replace_blank
 
-        formatters = properties.scan /formatters=\[(.*?)\]/
-        formatters = formatters&.first&.first.split(',') if formatters.any?
-        formatters = formatters.map { |f| f.strip } if formatters.any?
-
-        attr = get_property_str(properties, 'attr')
-        index = get_property_str(properties, 'index')
-        max_blanks = get_property_str(properties, 'max_blanks')
-
-        opts = {
-          formatters: formatters,
-          attr: attr,
-          index: index,
-          max_blanks: max_blanks
-        }
         value = yield(tag, opts, body, query)
         if value.is_a? Hash
           value_h = value
@@ -97,15 +98,67 @@ class VariableReplacement::Base
               else
                 "{!#{tag[:name]}#{properties}!}"
               end
-        query = query.gsub(str, value) unless value.blank? && !replace_blank
+        replaced_query = replaced_query.gsub(str, value) unless value.blank? && !replace_blank
       end
     end
-    query
+    replaced_query
   end
 
-  def get_property_str(properties, key)
-    prop = properties.scan /#{key}="(.*?)"/
-    prop&.first&.first
+  def opts_from_properties(properties)
+    opts = {}
+    new_properties = properties
+    str_matches = new_properties.scan /([a-z_]*?)="(.*?)"/m
+    str_matches.each do |m|
+      opts[m[0].to_sym] = m[1]
+      new_properties = new_properties.gsub("#{m[0]}=\"#{m[1]}\"", '')
+    end
+    loop do
+      arr_matches = new_properties.scan /([a-z_]*)=(\[.*)/m
+      break unless arr_matches.any?
+      arr_matches.each do |m|
+        index = new_properties.index(m[1])
+        full_tag = scan_for_closing(new_properties, index)
+        opts[m[0].to_sym] = full_tag[1..-2].split(',').map { |f| f.strip }
+        new_properties = new_properties.gsub("#{m[0]}=#{full_tag}", '')
+      end
+    end
+    str_matches = new_properties.scan /([a-z_]*?)=(true|false)/m
+    str_matches.each do |m|
+      opts[m[0].to_sym] = m[1]
+      new_properties = new_properties.gsub("#{m[0]}=#{m[1]}", '')
+    end
+    opts
+  end
+
+  def scan_for_closing(str, start_index)
+    end_index = nil
+    opening_char = str[start_index]
+    closing_char = case str[start_index]
+                   when '{'
+                     '}'
+                   when '['
+                     ']'
+                   when '<'
+                     '>'
+                   end
+    opening_count = 0
+    closing_count = 0
+    str[start_index..-1].chars.each_with_index do |c, i|
+      if c == closing_char
+        closing_count += 1
+      elsif c == opening_char
+        opening_count += 1
+      end
+      if closing_count == opening_count
+        end_index = start_index + i
+        break
+      end
+    end
+    if end_index
+      str[start_index..end_index]
+    else
+      str
+    end
   end
 
   def prep_conditional_block_variables(query)
@@ -113,11 +166,12 @@ class VariableReplacement::Base
     parse_query(query, tags) do |_tag, properties, body|
       max_blanks = properties[:max_blanks].to_i
       new_query = body
+      new_query = collection_table(new_query, false)
       new_query = prep_iterative_variables(new_query, false)
       new_query = prep_built_in_variables(new_query, false)
       new_query = prep_collection_variables(new_query, false)
       new_query = prep_nested_object_variables(new_query, false)
-      remaining_tags  = new_query.scan(/\{!(.*?)!\}/)
+      remaining_tags = new_query.scan(/\{!(.*?)!\}/)
       if remaining_tags.blank? || remaining_tags.count <= max_blanks
         new_query
       else
@@ -178,39 +232,59 @@ class VariableReplacement::Base
     end
   end
 
-  #{!!collection_table|collection name|table_classes|[{!attribute1}&"literal string or html"&{!attribute2}]!!}
-  # def collection_table(query)
-  #   matches = query.scan(/\{!!collection_table\|(.+?)!!\}/m) unless query.nil?
-  #   matches&.each do |match|
-  #     properties = match[0]&.split('|')
-  #     obj_name = properties[0]
-  #     table_classes = properties[1]
-  #     attr_str = match[0]&.scan(/#{obj_name}\|#{table_classes}\|\[(.+?)\]/m)[0][0]
-  #     attr_str.gsub!("},", '}%del%').gsub!('",', '"%del%')
-  #     attributes = attr_str.split("%del%")
-  #     # Security Check (make sure they can only access data I say they can...)
-  #     perm = self.class.collection_objects.find { |a| a[:obj].casecmp(obj_name) == 0 }
-  #     next unless perm
-  #     objects = eval(obj_name)
-  #     attribute_matches = contents.scan(/\{!(.+?)\}/) unless contents.nil?
-  #     objects.each do |obj|
-  #       obj_contents = contents
-  #       attribute_matches&.each do |attribute_match|
-  #         attribute = attribute_match.first
-  #         next unless perm[:attributes].include?(attribute.split('|')[0])
-  #         value = get_value(obj, attribute)
-  #         obj_contents = obj_contents.gsub("{!#{attribute}}", value) unless value.blank? && !replace_blank
-  #       end
-  #       new_contents = new_contents + obj_contents
-  #     end
-  #     if objects.empty? && !replace_blank # don't remove the contents if replace_blank is false
-  #       new_contents = contents
-  #     end
-  #     query = query.gsub("{!!#{obj_name}}#{contents}{!!end}", new_contents)
-  #   end
-  #   query
-  # end
+  #{!CollectionTable
+  #   collection="bulletin_items"
+  #   id="tableId"
+  #   classes="class1 class2"
+  #   columns=[{!attribute1!}, "literal string or html", attribute2]
+  #   headings=[heading1, heading2, heading3]
+  # !}
+  def collection_table(query, replace_blank = true)
+    tags = [{ name: 'CollectionTable' }]
+    parse_query(query, tags, replace_blank: replace_blank) do |_tag, properties|
+      collection = eval(properties[:collection])
+      collection_tag = self.class.collection_objects.find { |h| h[:obj] == properties[:collection] }
 
+      table_id = properties[:id]
+      table_classes = properties[:class]
+      columns = strip_quotes_from_arr(properties[:columns])
+      column_classes = strip_quotes_from_arr(properties[:column_classes])
+      headings = strip_quotes_from_arr(properties[:headings])
+      value = ["<table id=\"#{table_id}\" class=\"#{table_classes}\">"]
+      if headings&.size == columns&.size
+        value << "<thead><tr>"
+        headings&.each { |h| value << "<th>#{h}</th>" }
+        value << "</tr></thead>"
+      end
+      value << "<tbody>"
+      collection.each do |member|
+        value << "<tr>"
+        columns.each_with_index do |column, index|
+          column_class = column_classes&.[](index)
+          attr_tags = collection_tag[:attributes].map { |a| { name: a, obj: member } }
+          v = parse_query(column, attr_tags, replace_blank: replace_blank) do |tag, properties|
+            obj = tag[:obj]
+            attr = tag[:name]
+            formatters = properties[:formatters] || []
+            get_value(obj, attr, formatters)
+          end
+          value << "<td class='#{column_class}'>#{v}</td>"
+        end
+        value << "</tr>"
+      end
+      value << "</tbody></table>"
+      value.join
+    end
+  end
+
+  def strip_quotes_from_arr(arr)
+    arr&.map do |c|
+      if (c[0] == c[-1]) && c[0].in?(%w[' "])
+        c = c[1..-2]
+      end
+      c
+    end
+  end
   # These are built in variables (defined in the 'system_vars' class method)
   # {!OpeningPrayer}
   def prep_built_in_variables(query, replace_blank = true)
@@ -222,17 +296,14 @@ class VariableReplacement::Base
     end
   end
 
-  def get_value(object, attribute_str, formatters = [])
-    arr = attribute_str.split('|')
-    attribute = arr[0]
-    if arr.length > 1
-      formatters = arr[1].split(',') + formatters
-    end
-    value = object.send(attribute).to_s rescue ''
+  def get_value(object, attribute, formatters = [])
+    attribute = object.send(attribute).to_s unless object.nil?
     formatters.each do |format|
-      value = send(format, value) rescue value
+      attribute = send(format, attribute) rescue value
     end
-    value
+    attribute
+  rescue
+    ''
   end
 
 end

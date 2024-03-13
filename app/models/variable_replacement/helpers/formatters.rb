@@ -2,14 +2,14 @@ module VariableReplacement
   module Helpers
     module Formatters
       include ActionView::Helpers::NumberHelper
-      STRING_METHODS = %w(humanize capitalize downcase underscore upcase titleize)
+      STRING_METHODS = %w(humanize capitalize downcase underscore upcase titleize html_safe)
 
       def day(date)
         return date if date.blank?
-        if time.is_a? String
+        if date.is_a? String
           date = Date.parse(date)
         end
-        date.in_time_zone(timezone).strftime("%D")
+        date.in_time_zone(timezone).strftime("%-d")
       rescue
         ''
       end
@@ -30,7 +30,28 @@ module VariableReplacement
           date = Date.parse(date)
         end
         date.in_time_zone(timezone).strftime("%b #{date.day.ordinalize}, %Y")
-        rescue ''
+      rescue
+        ''
+      end
+
+      def ordinalized_day(date)
+        return date if date.blank?
+        if date.is_a? String
+          date = Date.parse(date)
+        end
+        date.day.ordinalize
+      rescue
+        ''
+      end
+
+      def month(date)
+        return date if date.blank?
+        if date.is_a? String
+          date = Date.parse(date)
+        end
+        date.in_time_zone(timezone).strftime("%b")
+      rescue
+        ''
       end
 
       def time(time)

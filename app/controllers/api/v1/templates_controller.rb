@@ -45,7 +45,7 @@ module Api
                                .group_by { |h| h[:group] }
         other_vars = {
           "Other" => [{ name: "If Present", value: "{!!if_present}<br><br>{!!end_if_present}" }],
-          "Formatters" => %w(day mm_dd_y humanized_date time date_time humanize capitalize downcase underscore upcase).map {|f| {name: f, value: f}}
+          "Formatters" => %w(day mm_dd_y humanized_date ordinalized_day month time date_time humanize capitalize downcase underscore upcase).map {|f| {name: f, value: f}}
         }
         render json: { system_vars: system_vars, nested_object_vars: nested_object_vars,
                        collection_objects: { "Collection Wrappers" => collection_objects },
