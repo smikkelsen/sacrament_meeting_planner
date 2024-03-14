@@ -35,15 +35,19 @@ class ProgramForm extends React.Component {
 
     renderUserSelect(label, userType, userTypeFilter, role) {
         let attributeId = `${userType}.id`
+        let users = this.props.users
+        if(userTypeFilter) {
+        users = users.filter(function (u) {
+                return u[userTypeFilter] === true
+            })
+        }
         return (
             <FloatingLabel label={label} controlId={attributeId}>
                 <Form.Select value={this.renderInputValue(attributeId)}
                              onChange={(e) => this.handleNestedObjChange(this.props.users, userType, e)}
                              disabled={!hasRole(role, this.props.currentUser.role)}>
                     <option></option>
-                    {this.props.users.filter(function (u) {
-                        return u[userTypeFilter] === true
-                    }).map(user => (
+                    {users.map(user => (
                         <option key={user.id} value={user.id}>{user.full_name}</option>
                     ))}
                 </Form.Select>
@@ -143,6 +147,8 @@ class ProgramForm extends React.Component {
     render() {
         return (
             <Form>
+                <Row className={'input-row'}>
+                    <Col md={6} sm={12}>
                 <FloatingLabel className={'input-row'} label={'Meeting Type'} controlId={'meeting_type'}>
                     <Form.Select
                         value={this.renderInputValue('meeting_type')}
@@ -155,6 +161,11 @@ class ProgramForm extends React.Component {
                         <option value={'general_conference'}>General Conference</option>
                     </Form.Select>
                 </FloatingLabel>
+                    </Col>
+                    <Col md={6} sm={12}>
+                        {this.renderUserSelect('Presiding', 'presiding', null, 'bishopric')}
+                    </Col>
+                </Row>
                 {isMeetingType(this.state.program.meeting_type, ['stake_conference', 'general_conference']) ? '' :
                     <>
                         <Row className={'input-row'}>

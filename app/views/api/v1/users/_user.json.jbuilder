@@ -2,6 +2,9 @@ json.id user.id
 json.first_name user.first_name
 json.last_name user.last_name
 json.full_name user.full_name
+json.display_name user.display_name
+json.prefix user.prefix
+json.prefixed_name user.prefixed_name
 json.role user.role
 json.email user.email
 json.prepper user.prepper

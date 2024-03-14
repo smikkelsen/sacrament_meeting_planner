@@ -32,6 +32,8 @@ class UserRows extends React.Component {
         let params = {
             first_name: editUser.first_name,
             last_name: editUser.last_name,
+            display_name: editUser.display_name,
+            prefix: editUser.prefix,
             email: editUser.email,
             role: editUser.role,
             prepper: editUser.prepper,
@@ -147,6 +149,22 @@ class UserRows extends React.Component {
                     </Col>
                     <Col md={6} sm={12}>
                         {this.renderFormInput('Last Name', 'last_name')}
+                    </Col>
+                </Row>
+                <Row className={'input-row'}>
+                    <Col md={6} sm={12}>
+                        {this.renderFormSelect('Prefix', 'prefix',
+                            [
+                                {'k': 'brother', 'v': 'Brother'},
+                                {'k': 'sister', 'v': 'Sister'},
+                                {'k': 'bishop', 'v': 'Bishop'},
+                                {'k': 'president', 'v': 'President'},
+                                {'k': 'elder', 'v': 'Elder'},
+                            ], 'k', 'v'
+                        )}
+                    </Col>
+                    <Col md={6} sm={12}>
+                        {this.renderFormInput('Display Name', 'display_name')}
                     </Col>
                 </Row>
                 <Row className={'input-row'}>

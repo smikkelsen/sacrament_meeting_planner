@@ -59,7 +59,7 @@ module VariableReplacement
         if time.is_a? String
           time = Time.parse(time)
         end
-        time.in_time_zone(timezone).strftime("%I:%M %p")
+        time.in_time_zone(timezone).strftime("%l:%M %P")
       rescue
         ''
       end

@@ -34,7 +34,7 @@ class VariableReplacement::Base
   end
 
   def self.nested_objects
-    user_attributes = %w[id first_name last_name full_name email]
+    user_attributes = %w[id first_name last_name full_name email prefix prefixed_name display_name]
     hymn_attributes = %w[id name page category]
     vars = Array.new
     vars << { name: 'Presiding', display_name: 'Presiding', obj: 'presiding', attributes: user_attributes }
