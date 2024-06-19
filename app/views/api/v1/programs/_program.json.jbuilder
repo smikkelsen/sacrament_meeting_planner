@@ -50,21 +50,25 @@
     json.id program.opening_hymn&.id
     json.name program.opening_hymn&.name
     json.page program.opening_hymn&.page
+    json.category program.opening_hymn&.category
   end
   json.sacrament_hymn do
     json.id program.sacrament_hymn&.id
     json.name program.sacrament_hymn&.name
     json.page program.sacrament_hymn&.page
+    json.category program.sacrament_hymn&.category
   end
   json.intermediate_hymn do
     json.id program.intermediate_hymn&.id
     json.name program.intermediate_hymn&.name
     json.page program.intermediate_hymn&.page
+    json.category program.intermediate_hymn&.category
   end
   json.closing_hymn do
     json.id program.closing_hymn&.id
     json.name program.closing_hymn&.name
     json.page program.closing_hymn&.page
+    json.category program.closing_hymn&.category
   end
   json.program_items program.program_items do |pi|
     json.id pi.id

@@ -4,7 +4,7 @@ module Api
       before_action :set_hymn, only: [:show]
 
       def index
-        @hymns = Hymn.accessible_by(current_ability).all
+        @hymns = Hymn.accessible_by(current_ability).order(:category, :page).all
       end
 
       def show

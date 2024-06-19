@@ -66,7 +66,7 @@ class ProgramForm extends React.Component {
                     disabled={!hasRole(role, this.props.currentUser.role)}>
                     <option></option>
                     {this.props.hymns.map(hymn => (
-                        <option key={hymn.id} value={hymn.id}>#{hymn.page} {hymn.name}</option>
+                        <option key={hymn.id} value={hymn.id}>{humanize(hymn.category)} - #{hymn.page} {hymn.name}</option>
                     ))}
                 </Form.Select>
             </FloatingLabel>

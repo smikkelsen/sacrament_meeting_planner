@@ -8,6 +8,7 @@ import ProgramItems from "./ProgramItems";
 import ProgramForm from "./ProgramForm";
 import TemplateForm from "./TemplateForm";
 import {csrfToken} from "../common/api";
+import {humanize} from "../common/utils";
 
 const _ = require('lodash');
 
@@ -221,7 +222,7 @@ class ProgramRow extends React.Component {
 
     renderHymn(hymn) {
         if (hymn.name) {
-            return (`#${hymn.page} - ${hymn.name}`)
+            return (`${humanize(hymn.category)} #${hymn.page} - ${hymn.name}`)
         } else {
             return ('')
         }
