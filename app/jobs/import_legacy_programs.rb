@@ -1,5 +1,7 @@
 class ImportLegacyPrograms
 
+  attr_reader :missing_hymns, :missing_users, :programs, :problems
+
   def initialize(year, json)
     @year = year
     @json = json
@@ -13,7 +15,19 @@ class ImportLegacyPrograms
     @problems = {}
   end
 
-  def perform
+  def test_run
+    perform(true)
+    puts "Missing Users"
+    puts @missing_users
+
+    puts "Missing Hymns"
+    puts @missing_hymns
+
+    puts "Problems"
+    puts @problems
+  end
+
+  def perform(test = false)
     @json.each do |j|
       j = j.with_indifferent_access
       p = Program.new
@@ -48,7 +62,12 @@ class ImportLegacyPrograms
                        end
 
       if p.valid?
-        @programs << p
+        if test
+          @programs << p
+        else
+          p.save
+          build_program_items(p, j)
+        end
       else
         @problems[j['Date']] = p.errors.full_messages.join((' '))
       end
@@ -57,6 +76,16 @@ class ImportLegacyPrograms
       puts j
     end
 
+  end
+
+  def build_program_items(program, json)
+    content = json["Speakers/Prayers/Topics"]
+    3.times.with_index do |i|
+      speaker = content["Speaker #{i + 1}"]
+      if speaker.present?
+        program.program_items.create(key: speaker, item_type: :speaker)
+      end
+    end
   end
 
   def lookup_user(attribute, name)
