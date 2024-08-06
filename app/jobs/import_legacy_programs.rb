@@ -2,9 +2,10 @@ class ImportLegacyPrograms
 
   attr_reader :missing_hymns, :missing_users, :programs, :problems
 
-  def initialize(year, json)
+  def initialize(year, json, opts={})
     @year = year
     @json = json
+    @opts = opts
     init_vars
   end
 
@@ -37,6 +38,7 @@ class ImportLegacyPrograms
       p.conducting_id = lookup_user(:conductor, j['Conduct'])
       p.chorister_id = lookup_user(:chorister, j['Music']['Music Director'])
       p.organist_id = lookup_user(:organist, j['Music']['Organist'])
+      p.presiding_id = @opts[:presiding_id]
 
       p.opening_hymn_id = lookup_hymn(:opening, j['Music']['Opening Hymn']['Number'])
       p.sacrament_hymn_id = lookup_hymn(:sacrament, j['Music']['Sacrament Hymn']['Number'])
@@ -110,8 +112,9 @@ class ImportLegacyPrograms
 
     if hymn.nil?
       log_missing_hymn(type, page_number)
+    else
+      hymn.id
     end
-    hymn
   end
 
   def log_missing_user(type, value)
