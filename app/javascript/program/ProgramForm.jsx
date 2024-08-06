@@ -1,7 +1,7 @@
 import React from 'react';
 import {Form, Row, Col, Alert} from "react-bootstrap";
 import {findArrayElementByAttribute, humanize} from '../common/utils.js';
-import {formatDateTimeString} from '../common/date.js';
+import {formatDateTimeString, parseDateFromString} from '../common/date.js';
 import {hasRole} from '../common/roles.js';
 import {isMeetingType} from './programHelpers.js';
 import {FloatingLabel} from "react-bootstrap";
@@ -37,10 +37,16 @@ class ProgramForm extends React.Component {
         let attributeId = `${userType}.id`
         let users = this.props.users
         if(userTypeFilter) {
-        users = users.filter(function (u) {
+            users = users.filter(function (u) {
                 return u[userTypeFilter] === true
             })
         }
+        if(parseDateFromString(this.state.program.date) >= new Date() ) {
+            users = users.filter(function (u) {
+                return u['workflow_state'] === 'active'
+            })
+        }
+        
         return (
             <FloatingLabel label={label} controlId={attributeId}>
                 <Form.Select value={this.renderInputValue(attributeId)}
@@ -48,7 +54,9 @@ class ProgramForm extends React.Component {
                              disabled={!hasRole(role, this.props.currentUser.role)}>
                     <option></option>
                     {users.map(user => (
-                        <option key={user.id} value={user.id}>{user.full_name}</option>
+                        <option key={user.id} value={user.id}>{user.full_name}
+                            {user.workflow_state !== "active" && ` (${user.workflow_state})`}
+                        </option>
                     ))}
                 </Form.Select>
             </FloatingLabel>

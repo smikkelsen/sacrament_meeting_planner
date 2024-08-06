@@ -43,3 +43,15 @@ export const endOfYear = (yearOffset=0) => {
     var d = new Date()
     return(new Date(d.getFullYear() + 1 + yearOffset, 0, 0));
 }
+
+export const parseDateFromString = (dateString) => {
+    // Parse the date string using the Date constructor
+    const parsedDate = new Date(dateString);
+
+    // Check if the parsed date is valid
+    if (isNaN(parsedDate)) {
+        throw new Error('Invalid date string');
+    }
+
+    return parsedDate;
+}

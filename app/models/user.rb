@@ -4,6 +4,10 @@ class User < ApplicationRecord
 
   scope :active, -> { where(workflow_state: 'active') }
 
+  def active?
+    workflow_state == 'active'
+  end
+
   def full_name
     [first_name, last_name].join(' ')
   end

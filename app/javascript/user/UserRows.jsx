@@ -39,7 +39,8 @@ class UserRows extends React.Component {
             prepper: editUser.prepper,
             organist: editUser.organist,
             chorister: editUser.chorister,
-            conductor: editUser.conductor
+            conductor: editUser.conductor,
+            workflow_state: editUser.workflow_state
         }
 
         updateUser(editUser.id, params).then(
@@ -173,11 +174,19 @@ class UserRows extends React.Component {
                     </Col>
                 </Row>
                 <Row className={'input-row'}>
-                    <Col sm={12}>
+                    <Col md={6} sm={12}>
                         {this.renderFormSelect('Role', 'role',
                             this.props.roles,
                             'value',
                             'label'
+                        )}
+                    </Col>
+                    <Col md={6} sm={12}>
+                        {this.renderFormSelect('Workflow State', 'workflow_state',
+                            [
+                                {'k': 'active', 'v': 'Active'},
+                                {'k': 'archived', 'v': 'Archived'},
+                            ], 'k', 'v'
                         )}
                     </Col>
                 </Row>

@@ -6,6 +6,7 @@ json.display_name user.display_name
 json.prefix user.prefix
 json.prefixed_name user.prefixed_name
 json.role user.role
+json.workflow_state user.workflow_state
 json.email user.email
 json.prepper user.prepper
 json.organist user.organist

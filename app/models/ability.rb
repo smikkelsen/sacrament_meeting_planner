@@ -8,6 +8,8 @@ class Ability
     # { pending: 0, participant: 1, music: 10, clerk: 19, bishopric: 20, bishop: 21, admin: 99 }
 
     user ||= User.new # guest user (not logged in)
+    return unless user.active?
+
     case user.role
     when 'pending'
     when 'participant'

@@ -32,7 +32,7 @@ module Api
 
       def user_params
         params.require(:user).permit(
-          :first_name, :last_name, :email, :role, :prepper, :organist, :chorister, :conductor, :prefix, :display_name
+          :first_name, :last_name, :email, :role, :prepper, :organist, :chorister, :conductor, :prefix, :display_name, :workflow_state
         )
       end
 
