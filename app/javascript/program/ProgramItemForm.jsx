@@ -256,7 +256,7 @@ class ProgramItemForm extends React.Component {
         this.state.trelloItemValues.forEach((item, index) => {
             if (item.checked) {
                 let arr = item.name.split(/ \(release\) | \(call\) | \(sustain\) | - +/i)
-                newItems.push({key: arr[0], value: arr[1]})
+                newItems.push({key: arr[1], value: arr[0]})
             }
         })
         this.setState({showTrelloModal: false}, () => {

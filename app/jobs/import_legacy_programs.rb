@@ -10,8 +10,8 @@ class ImportLegacyPrograms
   end
 
   def init_vars
-    @missing_users = { prepper: [], conductor: [], organist: [], chorister: [] }
-    @missing_hymns = { opening: [], intermediate: [], sacrament: [], closing: [] }
+    @missing_users = { prepper: [], conductor: [], organist: [], chorister: [] }.with_indifferent_access
+    @missing_hymns = { opening: [], intermediate: [], sacrament: [], closing: [] }.with_indifferent_access
     @programs = []
     @problems = {}
   end
@@ -37,13 +37,14 @@ class ImportLegacyPrograms
       p.prep_id = lookup_user(:prepper, j['Prep'])
       p.conducting_id = lookup_user(:conductor, j['Conduct'])
       p.chorister_id = lookup_user(:chorister, j['Music']['Music Director'])
+
       p.organist_id = lookup_user(:organist, j['Music']['Organist'])
       p.presiding_id = @opts[:presiding_id]
 
-      p.opening_hymn_id = lookup_hymn(:opening, j['Music']['Opening Hymn']['Number'])
-      p.sacrament_hymn_id = lookup_hymn(:sacrament, j['Music']['Sacrament Hymn']['Number'])
-      p.intermediate_hymn_id = lookup_hymn(:intermediate, j['Music']['Intermediate Hymn']['Number'])
-      p.closing_hymn_id = lookup_hymn(:closing, j['Music']['Closing Hymn']['Number'])
+      p.opening_hymn_id = lookup_hymn(j, 'Opening Hymn')
+      p.sacrament_hymn_id = lookup_hymn(j, 'Sacrament Hymn')
+      p.intermediate_hymn_id = lookup_hymn(j, 'Intermediate Hymn')
+      p.closing_hymn_id = lookup_hymn(j, 'Closing Hymn')
 
       p.opening_prayer = j["Speakers/Prayers/Topics"]['Opening']
       p.closing_prayer = j["Speakers/Prayers/Topics"]['Closing']
@@ -107,11 +108,12 @@ class ImportLegacyPrograms
     match
   end
 
-  def lookup_hymn(type, page_number)
+  def lookup_hymn(program, type)
+    page_number = program['Music'][type]['Number'] rescue nil
     hymn = Hymn.where(category: :hymn, page: page_number).first
 
     if hymn.nil?
-      log_missing_hymn(type, page_number)
+      log_missing_hymn(type.downcase.gsub(' hymn', '').to_sym, page_number)
     else
       hymn.id
     end
@@ -126,3 +128,5 @@ class ImportLegacyPrograms
   end
 
 end
+
+j = ImportLegacyPrograms.new(2018, json)

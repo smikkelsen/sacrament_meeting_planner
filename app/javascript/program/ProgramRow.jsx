@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal, Button, Row, Col, Card, Badge} from 'react-bootstrap';
-import {formatDateTimeString} from '../common/date.js';
+import {formatDateString} from '../common/date.js';
 import {hasRole} from '../common/roles.js';
 import {isMeetingType} from './programHelpers.js';
 import {ChevronCompactDown, ChevronCompactUp, Pencil, FileEarmarkPdf, BookmarkStarFill} from 'react-bootstrap-icons';
@@ -122,6 +122,7 @@ class ProgramRow extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
+                    console.log(result)
                     this.setState({program: result, dirty: false, showEditModal: false})
                 },
                 (error) => {
@@ -173,7 +174,7 @@ class ProgramRow extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {formatDateTimeString(program.date, 'MMM do yyyy')}
+                        {formatDateString(program.date, 'MMM do yyyy')}
                         {this.renderMeetingType(program.meeting_type, ' - ')}
                     </Modal.Title>
                 </Modal.Header>
@@ -205,7 +206,7 @@ class ProgramRow extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Generate Template for {formatDateTimeString(program.date, 'MMM do yyyy')}
+                        Generate Template for {formatDateString(program.date, 'MMM do yyyy')}
                         {this.renderMeetingType(program.meeting_type, ' - ')}
                     </Modal.Title>
                 </Modal.Header>
@@ -291,12 +292,13 @@ class ProgramRow extends React.Component {
 
     dateFormatStr() {
         let date = this.state.program.date;
-        let year = formatDateTimeString(date, 'yyyy');
-        let today = new Date().getFullYear();
-        today = formatDateTimeString(today, 'yyyy');
+        let year = formatDateString(date, 'yyyy');
+        let today = new Date();
+        today = formatDateString(today, 'yyyy');
         if (_.isEqual(today, year)) {
             return ('MMM do')
         } else {
+            console.log(today + ' is not equal to ' + year)
             return ('MMM do yyyy')
         }
 
@@ -433,7 +435,7 @@ class ProgramRow extends React.Component {
                         {this.state.program.is_next ?
                             <span className={'next-bookmark-icon'}><BookmarkStarFill/></span> : ''}
                         <span className={'date me-2'}>
-                            {formatDateTimeString(program.date, this.dateFormatStr())}
+                            {formatDateString(program.date, this.dateFormatStr())}
                         </span>
                         <span className={'meeting-type text-info  me-4 mb-1'}>
                             {this.renderMeetingType(program.meeting_type)}
