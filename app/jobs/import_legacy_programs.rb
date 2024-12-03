@@ -128,5 +128,3 @@ class ImportLegacyPrograms
   end
 
 end
-
-j = ImportLegacyPrograms.new(2018, json)
