@@ -3,8 +3,8 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|
-      format.json { head :forbidden, content_type: 'text/html' }
-      format.html { redirect_to root_path, flash: { alert: exception.message } }
+      format.json { render json: { error: 'Access denied. You do not have permission to perform this action.' }, status: :forbidden }
+      format.html { redirect_to root_path, alert: 'Access denied. You do not have permission to view this page.' }
       format.js { head :forbidden, content_type: 'text/html' }
     end
   end
@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    User.where(id: cookies.signed[:user_id]).first
+    @current_user ||= User.where(id: cookies.signed[:user_id], workflow_state: 'active').first
   end
 
   helper_method :current_user

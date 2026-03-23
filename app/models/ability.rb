@@ -21,7 +21,7 @@ class Ability
     when 'clerk'
       can [:read, :update, :edit, :generate_template], Program
       can [:read, :update, :edit], Template
-      can [:read, :update, :edit], Hymn
+      can [:read, :update, :edit, :create, :destroy], Hymn
       can [:read, :update, :edit], User
       can [:read, :update, :edit], BulletinItem
       can [:read], :reports
@@ -29,7 +29,7 @@ class Ability
       can [:read, :show, :update, :edit], Program
       can [:read, :show, :update, :edit], ::Template
       can :manage, Template
-      can [:read, :update, :edit], Hymn
+      can [:read, :update, :edit, :create, :destroy], Hymn
       can [:list_cards, :board_lists], Trello
       can [:read, :update, :edit], User
       can [:read, :update, :edit, :destroy], BulletinItem
@@ -37,7 +37,7 @@ class Ability
     when 'bishop'
       can [:read, :update, :edit], Program
       can [:read, :update, :edit], Template
-      can [:read, :update, :edit], Hymn
+      can [:read, :update, :edit, :create, :destroy], Hymn
       can [:list_cards, :board_lists], Trello
       can [:read, :update, :edit], User
       can [:read, :update, :edit, :destroy], BulletinItem

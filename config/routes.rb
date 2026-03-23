@@ -33,7 +33,7 @@ Rails.application.routes.draw do
 
     namespace :api do
       namespace :v1 do
-        resources :hymns, only: [:index, :show]
+        resources :hymns, only: [:index, :show, :create, :update, :destroy]
         get '/templates/list_vars/:template_type', to: 'templates#list_vars'
         resources :templates, only: [:index, :show, :create, :update]
         resources :programs, only: [:index, :show, :update]

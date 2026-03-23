@@ -1,8 +1,12 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
+import 'bootstrap'
 import App from '../template/app';
 
-ReactDOM.render(
-    <App name="React" />,
-    document.getElementById('templates-content'),
-);
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('templates-content');
+    if (container) {
+        const root = createRoot(container);
+        root.render(<App name="React" />);
+    }
+});

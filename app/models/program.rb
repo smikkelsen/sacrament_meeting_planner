@@ -16,7 +16,9 @@ class Program < ApplicationRecord
   belongs_to :intermediate_hymn, class_name: 'Hymn', optional: true
   belongs_to :sacrament_hymn, class_name: 'Hymn', optional: true
 
-  scope :next, -> { where('date >= ?', Date.today).order(date: :asc).limit(1).first }
+  def self.next
+    where('date >= ?', Date.today).order(date: :asc).first
+  end
   validates_presence_of :date, :meeting_type
   # validates_presence_of :presiding_id, :conducting_id, :chorister_id, :organist_id, if: -> {meeting_type.in? :standard, :fast_sunday, :ward_conference}
 

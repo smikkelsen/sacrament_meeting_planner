@@ -1,76 +1,88 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Table, Modal} from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 
-class HymnTable extends React.Component {
+function HymnTable({ hymns, onEdit, onDelete, onSort, sortBy, sortDirection }) {
+    const categoryDisplay = {
+        'hymn': 'Hymn',
+        'childrens_song': "Children's Song",
+        'new_hymn': 'New Hymn'
+    };
 
-    constructor(props) {
-        super(props);
-        this.handleHymnClick = this.handleHymnClick.bind(this);
-        this.state = {
-            showModal: false,
-            // showCompleteTaskBtn: true,
-            // showSnoozeTaskBtn: true,
-            hymns: this.props.hymns,
-            hymn: {
-                name: null,
-                page: null,
-                category: null,
-                id: null
-            }
-        };
-    }
+    const SortIcon = ({ field }) => {
+        if (sortBy !== field) {
+            return <span className="ms-1 text-muted">↕</span>;
+        }
+        return <span className="ms-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
+    };
 
+    const SortableHeader = ({ field, children }) => (
+        <th onClick={() => onSort(field)} style={{ cursor: 'pointer', userSelect: 'none' }}>
+            {children}
+            <SortIcon field={field} />
+        </th>
+    );
 
-    handleHymnClick(hymn, e) {
-            this.setState({showModal: true, hymn: {name: hymn.name, page: hymn.page, category: hymn.category, id: hymn.id}})
-    }
-
-    renderModal() {
+    if (hymns.length === 0) {
         return (
-            <Modal
-                show={this.state.showModal}
-                onHide={() => this.setState({showModal: false})}
-                size="lg"
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        {this.state.hymn.name}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/*<HymnDetail hymn_id={this.state.hymn.id}/>*/}
-                </Modal.Body>
-                <Modal.Footer>
-                </Modal.Footer>
-            </Modal>
-        )
-    }
-
-
-    render() {
-        return (
-            <div>
-                <Table>
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Page</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.state.hymns.map(hymn => (
-                        <tr key={hymn.id} onClick={(e) => this.handleHymnClick(hymn, e)} >
-                            <td>{hymn.name}</td>
-                            <td>#{hymn.page}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </Table>
-                {this.renderModal()}
+            <div className="text-center text-muted py-5">
+                <p>No hymns found. Click "Add New Hymn" to create one.</p>
             </div>
         );
     }
+
+    return (
+        <Table striped bordered hover>
+            <thead>
+                <tr>
+                    <SortableHeader field="name">Name</SortableHeader>
+                    <SortableHeader field="page">Page</SortableHeader>
+                    <SortableHeader field="category">Category</SortableHeader>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {hymns.map(hymn => (
+                    <tr key={hymn.id}>
+                        <td>{hymn.name}</td>
+                        <td>#{hymn.page}</td>
+                        <td>{categoryDisplay[hymn.category] || hymn.category}</td>
+                        <td>
+                            <Button
+                                variant="outline-primary"
+                                size="sm"
+                                className="me-2"
+                                onClick={() => onEdit(hymn)}
+                            >
+                                Edit
+                            </Button>
+                            <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={() => onDelete(hymn.id)}
+                            >
+                                Delete
+                            </Button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </Table>
+    );
 }
 
-export default HymnTable
+HymnTable.propTypes = {
+    hymns: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        page: PropTypes.string.isRequired,
+        category: PropTypes.string.isRequired
+    })).isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onSort: PropTypes.func.isRequired,
+    sortBy: PropTypes.string.isRequired,
+    sortDirection: PropTypes.string.isRequired
+};
+
+export default HymnTable;

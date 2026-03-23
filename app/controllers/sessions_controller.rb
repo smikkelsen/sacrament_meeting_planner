@@ -4,10 +4,15 @@ class SessionsController < ApplicationController
 
   def create
     if user = authenticate_with_google
-      cookies.signed[:user_id] = user.id
-      redirect_to root_path
+      # Set cookie to expire in 30 days
+      cookies.signed[:user_id] = {
+        value: user.id,
+        expires: 30.days.from_now,
+        httponly: true
+      }
+      redirect_to root_path, notice: 'Successfully signed in'
     else
-      redirect_to new_session_path, alert: 'authentication failed'
+      redirect_to new_session_path, alert: 'Authentication failed. Please try again.'
     end
   end
 

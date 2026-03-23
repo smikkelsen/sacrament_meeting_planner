@@ -1,8 +1,12 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import App from '.././user/app';
+import { createRoot } from 'react-dom/client'
+import 'bootstrap'
+import App from '../user/app';
 
-ReactDOM.render(
-    <App name="React" />,
-    document.getElementById('user-content'),
-);
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('user-content');
+    if (container) {
+        const root = createRoot(container);
+        root.render(<App name="React" />);
+    }
+});
