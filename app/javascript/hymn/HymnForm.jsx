@@ -17,6 +17,24 @@ class HymnForm extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
+    componentDidUpdate(prevProps) {
+        // When the modal is opened, initialize/reset the form fields
+        if (this.props.show && !prevProps.show) {
+            this.setState({
+                hymn: this.props.hymn || { name: '', page: '', category: 'hymn' },
+                errors: {}
+            });
+        }
+        // When switching into edit mode for a different hymn, sync fields
+        if (
+            this.props.isEditing &&
+            this.props.hymn &&
+            (!prevProps.hymn || this.props.hymn.id !== prevProps.hymn?.id)
+        ) {
+            this.setState({ hymn: this.props.hymn, errors: {} });
+        }
+    }
+
     handleChange(e) {
         const { name, value } = e.target;
         this.setState(prevState => ({
